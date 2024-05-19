@@ -1,19 +1,34 @@
 {
-    "editor.quickSuggestions": {
-      "other": "on",
-      "comments": "off",
-      "strings": "on"
-    },
-    "css.validate": false,
-    "editor.inlineSuggest.enabled": true,
-    "workbench.editor.customLabels.patterns": {
-      "**/app/**/page.tsx": "${dirname} - Page",
-      "**/app/**/index.tsx": "${dirname} - Index",
-      "**/app/**/layout.tsx": "${dirname} - Layout",
-      "**/api/**/route.ts": "${dirname(1)}->${dirname} - Routes",
-      "**/components/**/index.tsx": "${dirname} - Component",
-      "**/src/db/*.ts": "db - ${filename}",
-      "**/src/drizzle/*.ts": "drizzle - ${filename}",
-      "**/src/server/routers/*.ts": "${filename} - trpc router"
-    }
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "editor.formatOnSave": true,
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.quickSuggestions": {
+    "other": "on",
+    "comments": "off",
+    "strings": "on"
+  },
+  "css.validate": false,
+  "editor.inlineSuggest.enabled": true,
+  "workbench.editor.customLabels.patterns": {
+    "**/app/**/page.tsx": "${dirname} - Page",
+    "**/app/**/index.tsx": "${dirname} - Index",
+    "**/app/**/layout.tsx": "${dirname} - Layout",
+    "**/api/**/route.ts": "${dirname(1)}->${dirname} - Routes",
+    "**/components/**/index.tsx": "${dirname} - Component",
+    "**/src/db/*.ts": "db - ${filename}",
+    "**/src/drizzle/*.ts": "drizzle - ${filename}",
+    "**/src/server/routers/*.ts": "${filename} - trpc router"
+  }
 }
