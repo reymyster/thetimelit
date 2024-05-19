@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   description: "Time in Literature",
 };
 
-const titleFont = DM_Serif_Display({ weight: "400" });
+const titleFont = DM_Serif_Display({ weight: "400", subsets: ["latin"] });
 
 export default function RootLayout({
   children,
