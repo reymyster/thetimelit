@@ -1,0 +1,19 @@
+{
+    "editor.quickSuggestions": {
+      "other": "on",
+      "comments": "off",
+      "strings": "on"
+    },
+    "css.validate": false,
+    "editor.inlineSuggest.enabled": true,
+    "workbench.editor.customLabels.patterns": {
+      "**/app/**/page.tsx": "${dirname} - Page",
+      "**/app/**/index.tsx": "${dirname} - Index",
+      "**/app/**/layout.tsx": "${dirname} - Layout",
+      "**/api/**/route.ts": "${dirname(1)}->${dirname} - Routes",
+      "**/components/**/index.tsx": "${dirname} - Component",
+      "**/src/db/*.ts": "db - ${filename}",
+      "**/src/drizzle/*.ts": "drizzle - ${filename}",
+      "**/src/server/routers/*.ts": "${filename} - trpc router"
+    }
+}

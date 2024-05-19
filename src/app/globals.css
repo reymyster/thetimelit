@@ -24,6 +24,17 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+  /* background-image: url("/bg/gradient1.svg"); */
+  /* background-image: url("/bg/tiles1.jpg"); */
+  background-image: url("/bg/marble_sm.webp");
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+@media screen and (min-width: 1280px) {
+  body {
+    background-image: url("/bg/marble_lg.webp");
+  }
 }
 
 @layer utilities {
