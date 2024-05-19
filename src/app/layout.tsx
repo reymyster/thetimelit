@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
+import { DM_Serif_Display } from "next/font/google";
+import { cn } from "@/lib/utils";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "The Time Lit",
   description: "Time in Literature",
 };
+
+const titleFont = DM_Serif_Display({ weight: "400" });
 
 export default function RootLayout({
   children,
@@ -34,7 +38,14 @@ export default function RootLayout({
         />
         <link rel="manifest" href="/site.webmanifest" />
       </head>
-      <body className={GeistSans.className}>{children}</body>
+      <body className={cn("flex min-h-screen flex-col", GeistSans.className)}>
+        <header className="flex h-16 flex-grow-0 flex-row items-center justify-center bg-white/50 px-2 text-black/80 shadow-lg backdrop-blur-sm lg:px-4">
+          <div className={cn("text-2xl tracking-wide", titleFont.className)}>
+            The Time Lit
+          </div>
+        </header>
+        {children}
+      </body>
     </html>
   );
 }
