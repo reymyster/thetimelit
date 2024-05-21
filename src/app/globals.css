@@ -82,13 +82,23 @@
   }
 
   body {
+    position: relative;
+  }
+
+  body::before {
+    content: "";
+    position: absolute;
+    inset: 0;
     background-image: url("/bg/marble_sm.webp");
     background-size: cover;
-    background-attachment: fixed;
   }
 
   @media screen and (min-width: 1280px) {
-    body {
+    body::before {
       background-image: url("/bg/marble_lg.webp");
     }
+  }
+
+  .dark body::before {
+    filter: invert(1);
   }

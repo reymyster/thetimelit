@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 import { DM_Serif_Display } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -39,12 +40,19 @@ export default function RootLayout({
         <link rel="manifest" href="/site.webmanifest" />
       </head>
       <body className={cn("flex min-h-screen flex-col", GeistSans.className)}>
-        <header className="flex h-16 flex-grow-0 flex-row items-center justify-center bg-white/50 px-2 text-black/80 shadow-lg backdrop-blur-sm lg:px-4">
-          <div className={cn("text-2xl tracking-wide", titleFont.className)}>
-            The Time Lit
-          </div>
-        </header>
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <header className="bg-primary/50 text-primary-foreground/90 flex h-16 flex-grow-0 flex-row items-center justify-center px-2 shadow-lg backdrop-blur-sm lg:px-4">
+            <div className={cn("text-2xl tracking-wide", titleFont.className)}>
+              The Time Lit
+            </div>
+          </header>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
