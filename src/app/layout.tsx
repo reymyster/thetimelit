@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 import { Settings } from "./settings";
+import { Menu } from "./menu";
 
 export const metadata: Metadata = {
   title: "The Time Lit",
@@ -61,7 +62,9 @@ export default function RootLayout({
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <header className="bg-background/50 text-foreground/90 flex h-16 flex-grow-0 flex-row items-center justify-between px-2 shadow-lg backdrop-blur-sm lg:px-4">
-            <div className="w-8 flex-grow-0">&nbsp;</div>
+            <div className="w-8 flex-grow-0">
+              <Menu />
+            </div>
             <div className={cn("text-2xl tracking-wide", titleFont.className)}>
               The Time Lit
             </div>
