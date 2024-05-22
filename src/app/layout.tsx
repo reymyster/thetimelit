@@ -39,7 +39,15 @@ export default function RootLayout({
         />
         <link rel="manifest" href="/site.webmanifest" />
       </head>
-      <body className={cn("flex min-h-screen flex-col", GeistSans.className)}>
+      <body
+        className={cn(
+          "relative flex min-h-screen flex-col",
+          "before:absolute before:inset-0 before:bg-cover before:content-['']",
+          "before:bg-[url('/bg/marble_sm.webp')] xl:before:bg-[url('/bg/marble_lg.webp')]",
+          "dark:before:invert",
+          GeistSans.className,
+        )}
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
