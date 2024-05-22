@@ -24,6 +24,7 @@ export function Menu() {
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon">
           <MenuIcon className="h-4 w-4" />
+          <span className="sr-only">Menu</span>
         </Button>
       </SheetTrigger>
       <SheetContent side={"left"} showCloseButton={false}>

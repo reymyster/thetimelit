@@ -27,6 +27,7 @@ export function Settings() {
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon">
           <SettingsIcon className="h-4 w-4" />
+          <span className="sr-only">Settings</span>
         </Button>
       </SheetTrigger>
       <SheetContent>
