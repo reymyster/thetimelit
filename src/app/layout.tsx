@@ -4,6 +4,7 @@ import { DM_Serif_Display } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
+import { Settings } from "./settings";
 
 export const metadata: Metadata = {
   title: "The Time Lit",
@@ -18,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link
           rel="apple-touch-icon"
@@ -38,6 +39,16 @@ export default function RootLayout({
           href="/favicon-16x16.png"
         />
         <link rel="manifest" href="/site.webmanifest" />
+        <meta
+          name="theme-color"
+          media="(prefers-color-scheme: light)"
+          content="white"
+        />
+        <meta
+          name="theme-color"
+          media="(prefers-color-scheme: dark)"
+          content="black"
+        />
       </head>
       <body
         className={cn(
@@ -48,15 +59,14 @@ export default function RootLayout({
           GeistSans.className,
         )}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <header className="bg-primary/50 text-primary-foreground/90 flex h-16 flex-grow-0 flex-row items-center justify-center px-2 shadow-lg backdrop-blur-sm lg:px-4">
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <header className="bg-background/50 text-foreground/90 flex h-16 flex-grow-0 flex-row items-center justify-between px-2 shadow-lg backdrop-blur-sm lg:px-4">
+            <div className="w-8 flex-grow-0">&nbsp;</div>
             <div className={cn("text-2xl tracking-wide", titleFont.className)}>
               The Time Lit
+            </div>
+            <div className="w-8 flex-grow-0">
+              <Settings />
             </div>
           </header>
           {children}
