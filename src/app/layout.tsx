@@ -53,10 +53,10 @@ export default function RootLayout({
       </head>
       <body
         className={cn(
-          "bg-background relative flex min-h-screen flex-col",
+          "bg-foreground/50 relative flex min-h-screen flex-col",
           "before:absolute before:inset-0 before:bg-cover before:content-['']",
           "before:bg-[url('/bg/marble_sm.webp')] xl:before:bg-[url('/bg/marble_lg.webp')]",
-          "dark:bg-foreground/25 dark:before:opacity-80 dark:before:invert",
+          "before:opacity-80 dark:before:invert",
           GeistSans.className,
         )}
       >
