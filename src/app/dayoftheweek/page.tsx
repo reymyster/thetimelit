@@ -16,7 +16,7 @@ export default async function DayOfTheWeekPage() {
         name: true,
       },
     },
-    // filter: e.op(quote.day, "=", today),
+    filter: e.op(quote.day, "=", today),
     order_by: [{ expression: e.random() }],
     limit: 1,
   }));
