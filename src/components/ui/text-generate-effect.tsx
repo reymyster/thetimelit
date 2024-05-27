@@ -12,6 +12,8 @@ export const TextGenerateEffect = ({
 }) => {
   const [scope, animate] = useAnimate();
   let wordsArray = words.split(" ");
+
+  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     animate(
       "span",
@@ -24,6 +26,7 @@ export const TextGenerateEffect = ({
       },
     );
   }, [scope.current]);
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   const renderWords = () => {
     return (
