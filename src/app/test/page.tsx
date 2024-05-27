@@ -1,13 +1,21 @@
 "use client";
 
 import { trpc } from "@/app/_trpc/client";
-
-const today = new Date();
+import { useDateResetsEvery } from "@/lib/dates/hooks";
 
 export default function Page() {
-  const { status, data } = trpc.hi.useQuery({ date: today });
+  const now = useDateResetsEvery("minute");
+  const { status, data } = trpc.hi.useQuery({ date: now });
 
-  console.log({ status, data });
+  console.log({
+    now,
+    offset: now.getTimezoneOffset(),
+    status,
+    data,
+    d: now.toLocaleTimeString(),
+    u: now.toUTCString(),
+  });
+  console.log(`hour: ${now.getHours()}, minute: ${now.getMinutes()}`);
 
   return (
     <div className="p-24">
