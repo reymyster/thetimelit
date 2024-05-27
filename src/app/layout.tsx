@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 import { Settings } from "./settings";
 import { Menu } from "./menu";
+import TRPCProvider from "@/app/_trpc/provider";
 
 export const metadata: Metadata = {
   title: "The Time Lit",
@@ -53,7 +54,7 @@ export default function RootLayout({
       </head>
       <body
         className={cn(
-          "bg-foreground/50 relative flex min-h-screen flex-col",
+          "relative flex min-h-screen flex-col bg-foreground/50",
           "before:absolute before:inset-0 before:bg-cover before:content-['']",
           "before:bg-[url('/bg/marble_sm.webp')] xl:before:bg-[url('/bg/marble_lg.webp')]",
           "before:opacity-80 dark:before:invert",
@@ -61,18 +62,22 @@ export default function RootLayout({
         )}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <header className="bg-background/50 text-foreground/90 flex h-16 flex-grow-0 flex-row items-center justify-between px-2 shadow-lg backdrop-blur-sm lg:px-4">
-            <div className="w-8 flex-grow-0">
-              <Menu />
-            </div>
-            <div className={cn("text-2xl tracking-wide", titleFont.className)}>
-              The Time Lit
-            </div>
-            <div className="w-8 flex-grow-0">
-              <Settings />
-            </div>
-          </header>
-          {children}
+          <TRPCProvider>
+            <header className="flex h-16 flex-grow-0 flex-row items-center justify-between bg-background/50 px-2 text-foreground/90 shadow-lg backdrop-blur-sm lg:px-4">
+              <div className="w-8 flex-grow-0">
+                <Menu />
+              </div>
+              <div
+                className={cn("text-2xl tracking-wide", titleFont.className)}
+              >
+                The Time Lit
+              </div>
+              <div className="w-8 flex-grow-0">
+                <Settings />
+              </div>
+            </header>
+            {children}
+          </TRPCProvider>
         </ThemeProvider>
       </body>
     </html>
