@@ -9,19 +9,23 @@ export const dynamic = "force-dynamic";
 export default async function DayOfTheWeekPage() {
   const today = new Date().getDay();
 
-  const selectedQuotes = e.select(e.Quote, (quote) => ({
-    text: true,
-    highlight: true,
-    src: {
-      title: true,
-      author: {
-        name: true,
+  const selectedQuotes = e.select(e.Quote, (quote) => {
+    const isToday = e.op(quote.day, "=", today);
+    const hasHighlight = e.op("exists", quote.highlight);
+    return {
+      text: true,
+      highlight: true,
+      src: {
+        title: true,
+        author: {
+          name: true,
+        },
       },
-    },
-    filter: e.op(quote.day, "=", today),
-    order_by: [{ expression: e.random() }],
-    limit: 1,
-  }));
+      filter: e.op(isToday, "and", hasHighlight),
+      order_by: [{ expression: e.random() }],
+      limit: 1,
+    };
+  });
 
   const quote = (await selectedQuotes.run(client))?.[0];
 
