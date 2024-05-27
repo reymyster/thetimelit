@@ -4,6 +4,8 @@ import { cn } from "@/lib/utils";
 
 const client = createClient();
 
+export const dynamic = "force-dynamic";
+
 export default async function DayOfTheWeekPage() {
   const today = new Date().getDay();
 
