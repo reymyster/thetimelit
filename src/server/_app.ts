@@ -1,5 +1,6 @@
 import { publicProcedure, router } from "./trpc";
 import { z } from "zod";
+import { publicRouter } from "./routers/public";
 
 export const appRouter = router({
   greeting: publicProcedure.query(() => "hello tRPC v10!"),
@@ -10,6 +11,7 @@ export const appRouter = router({
 
     return { something: `hi: ${input.date.getDay()}` };
   }),
+  public: publicRouter,
 });
 
 // Export only the type of a router!

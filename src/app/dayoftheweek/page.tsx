@@ -1,33 +1,15 @@
-import { createClient } from "edgedb";
-import e from "@/dbschema/edgeql-js";
+"use client";
+
+import { trpc } from "@/app/_trpc/client";
+import { useDateResetsEvery } from "@/lib/dates/hooks";
 import { cn } from "@/lib/utils";
 
-export const dynamic = "force-dynamic";
+export default function DayOfTheWeekPage() {
+  const today = useDateResetsEvery("hour");
 
-const client = createClient();
+  const { status, data: quote } = trpc.public.quotes.getForDay.useQuery(today);
 
-export default async function DayOfTheWeekPage() {
-  const today = new Date().getDay();
-
-  const selectedQuotes = e.select(e.Quote, (quote) => {
-    const isToday = e.op(quote.day, "=", today);
-    const hasHighlight = e.op("exists", quote.highlight);
-    return {
-      text: true,
-      highlight: true,
-      src: {
-        title: true,
-        author: {
-          name: true,
-        },
-      },
-      filter: e.op(isToday, "and", hasHighlight),
-      order_by: [{ expression: e.random() }],
-      limit: 1,
-    };
-  });
-
-  const quote = (await selectedQuotes.run(client))?.[0];
+  if (status === "pending") return <div>Loading...</div>;
 
   return (
     <main className="flex flex-grow flex-col items-center justify-center">
