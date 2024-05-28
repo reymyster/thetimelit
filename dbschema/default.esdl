@@ -3,7 +3,11 @@ module default {
         required name: str {
             constraint exclusive;
         };
-        modified: datetime {
+        required created_at: datetime {
+            default := datetime_of_statement();
+            readonly := true;
+        };
+        modified_at: datetime {
             rewrite insert, update using (datetime_of_statement())
         };
         works := .<author[is Src];
@@ -13,7 +17,11 @@ module default {
         required title: str;
         url: str;
         required author: Author;
-        modified: datetime {
+        required created_at: datetime {
+            default := datetime_of_statement();
+            readonly := true;
+        };
+        modified_at: datetime {
             rewrite insert, update using (datetime_of_statement())
         };
         constraint exclusive on ((.title, .author));
@@ -27,9 +35,13 @@ module default {
         required anonymous: bool {
             default := false;
         };
-        modified: datetime {
+        required created_at: datetime {
+            default := datetime_of_statement();
+            readonly := true;
+        };
+        modified_at: datetime {
             rewrite insert, update using (datetime_of_statement())
-        }
+        };
     }
 
     type Quote {
@@ -44,8 +56,12 @@ module default {
         };
         submitted_by: User;
         verified_by: User;
-        modified: datetime {
+        required created_at: datetime {
+            default := datetime_of_statement();
+            readonly := true;
+        };
+        modified_at: datetime {
             rewrite insert, update using (datetime_of_statement())
-        }
+        };
     }
 }

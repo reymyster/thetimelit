@@ -7,10 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "edgedb:generate-migration": "edgedb migration create",
-    "edgedb:apply-migration": "edgedb migrate",
-    "edgedb:generate-query-builder": "npx @edgedb/generate edgeql-js",
-    "prebuild": "npx @edgedb/generate edgeql-js && npx @edgedb/generate interfaces"
+    "edgedb:generate-migration": "edgedb migration create -I reymyster/thetimelit",
+    "edgedb:apply-migration": "edgedb migrate -I reymyster/thetimelit",
+    "prebuild": "npx @edgedb/generate edgeql-js -I reymyster/thetimelit && npx @edgedb/generate interfaces -I reymyster/thetimelit"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.0.5",

@@ -33,4 +33,16 @@ export const quoteRouter = router({
 
       return (await query.run(client))?.[0];
     }),
+  getAllBasic: proc.query(async () => {
+    const query = e.select(e.Quote, (quote) => {
+      return {
+        id: true,
+        text: true,
+        highlight: true,
+        order_by: [{ expression: quote.created_at, direction: e.DESC }],
+      };
+    });
+
+    return await query.run(client);
+  }),
 });
