@@ -6,8 +6,8 @@ import { cn } from "@/lib/utils";
 
 export default function DayOfTheWeekPage() {
   const today = useDateResetsEvery("hour");
-
-  const { status, data: quote } = trpc.public.quotes.getForDay.useQuery(today);
+  const day = today.getDay();
+  const { status, data: quote } = trpc.public.quotes.getForDay.useQuery(day);
 
   if (status === "pending") return <div>Loading...</div>;
 
