@@ -46,13 +46,20 @@ module default {
 
     type Quote {
         required text: str;
+        auth: Author;
         src: Src;
         day: int16 {
             constraint min_value(0); #Sunday
             constraint max_value(6); #Saturday
         };
+        hour: tuple<`start`: int16, `end`: int16> {
+            constraint expression on (.`start` <= .`end` and .`start` >= 0 and .`end` <= 23);
+        };
+        minute: tuple<`start`: int16, `end`: int16> {
+            constraint expression on (.`start` <= .`end` and .`start` >= 0 and .`end` <= 59);
+        };
         highlight: tuple<`start`: int16, `end`: int16> {
-            constraint expression on (.`start` < .`end`);
+            constraint expression on (.`start` < .`end` and .`start` >= 0);
         };
         submitted_by: User;
         verified_by: User;
@@ -63,5 +70,12 @@ module default {
         modified_at: datetime {
             rewrite insert, update using (datetime_of_statement())
         };
+
+        proposedAuthor: str;
+        proposedSource: str;
+
+        constraint expression on (
+            (exists .auth or exists .src) and (not (exists .auth and exists .src))
+        );
     }
 }
