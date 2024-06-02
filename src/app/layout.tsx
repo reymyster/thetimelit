@@ -3,6 +3,7 @@ import { GeistSans } from "geist/font/sans";
 import { DM_Serif_Display } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
 import { Settings } from "./settings";
 import { Menu } from "./menu";
@@ -77,6 +78,7 @@ export default function RootLayout({
               </div>
             </header>
             {children}
+            <Toaster />
           </TRPCProvider>
         </ThemeProvider>
       </body>

@@ -52,12 +52,7 @@ module default {
             constraint min_value(0); #Sunday
             constraint max_value(6); #Saturday
         };
-        hour: tuple<`start`: int16, `end`: int16> {
-            constraint expression on (.`start` <= .`end` and .`start` >= 0 and .`end` <= 23);
-        };
-        minute: tuple<`start`: int16, `end`: int16> {
-            constraint expression on (.`start` <= .`end` and .`start` >= 0 and .`end` <= 59);
-        };
+        time: tuple<period: range<int32>, fullday: bool>;
         highlight: tuple<`start`: int16, `end`: int16> {
             constraint expression on (.`start` < .`end` and .`start` >= 0);
         };
@@ -75,7 +70,7 @@ module default {
         proposedSource: str;
 
         constraint expression on (
-            (exists .auth or exists .src) and (not (exists .auth and exists .src))
+            (not (exists .auth or exists .src)) or ((exists .auth or exists .src) and (not (exists .auth and exists .src)))
         );
     }
 }
