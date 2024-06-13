@@ -42,6 +42,9 @@ module default {
         modified_at: datetime {
             rewrite insert, update using (datetime_of_statement())
         };
+        required deleted: bool {
+            default := false;
+        };
     }
 
     type Quote {

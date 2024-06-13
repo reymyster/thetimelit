@@ -9,6 +9,7 @@ import "./globals.css";
 import { Settings } from "./settings";
 import { Menu } from "./menu";
 import TRPCProvider from "@/app/_trpc/provider";
+import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
 export const metadata: Metadata = {
   title: "The Time Lit",
