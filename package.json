@@ -10,9 +10,11 @@
     "edgedb:generate-migration": "edgedb migration create -I reymyster/thetimelit",
     "edgedb:apply-migration": "edgedb migrate -I reymyster/thetimelit",
     "edgedb:prebuild": "npx @edgedb/generate edgeql-js -I reymyster/thetimelit && npx @edgedb/generate interfaces -I reymyster/thetimelit",
-    "prebuild": "npx @edgedb/generate edgeql-js && npx @edgedb/generate interfaces"
+    "prebuild": "npx @edgedb/generate edgeql-js && npx @edgedb/generate interfaces",
+    "start-ngrok": "ngrok http --domain=slightly-capital-pug.ngrok-free.app 3000"
   },
   "dependencies": {
+    "@clerk/nextjs": "^5.1.5",
     "@hookform/resolvers": "^3.4.2",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-label": "^2.0.2",
