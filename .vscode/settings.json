@@ -29,6 +29,8 @@
     "**/components/**/index.tsx": "${dirname} - Component",
     "**/src/db/*.ts": "db - ${filename}",
     "**/src/drizzle/*.ts": "drizzle - ${filename}",
-    "**/src/server/routers/*.ts": "${filename} - trpc router"
+    "**/src/server/routers/*.ts": "${filename} - trpc router",
+    "**/app/manage/**/**/page.tsx": "${dirname(2)}/${dirname(1)}/${dirname}: Page",
+    "**/src/components/**/*.tsx": "${dirname(1)}/${dirname}: ${filename}"
   }
 }

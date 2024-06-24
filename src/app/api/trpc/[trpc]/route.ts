@@ -1,5 +1,6 @@
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 import { appRouter } from "@/server/_app";
+import { auth } from "@clerk/nextjs/server";
 
 const handler = (req: Request) =>
   fetchRequestHandler({
@@ -7,7 +8,8 @@ const handler = (req: Request) =>
     req,
     router: appRouter,
     createContext: () => {
-      return { user_id: "" };
+      const { userId } = auth();
+      return { user_id: userId ?? "" };
     },
   });
 

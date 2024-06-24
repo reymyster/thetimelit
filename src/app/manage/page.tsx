@@ -2,6 +2,7 @@
 
 import { trpc } from "@/app/_trpc/client";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 export default function Page() {
   const { status, data } = trpc.public.quotes.getAllBasic.useQuery();
@@ -28,7 +29,14 @@ export default function Page() {
                 <td className="max-w-[75svw] truncate border border-background/70 p-2">
                   {quote.text}
                 </td>
-                <td className="border border-background/70 p-2">link</td>
+                <td className="border border-background/70 p-2">
+                  <Link
+                    href={`/manage/quote/edit/${quote.id}`}
+                    prefetch={false}
+                  >
+                    Edit
+                  </Link>
+                </td>
               </tr>
             ))}
           </tbody>
