@@ -42,6 +42,11 @@ export const quoteRouter = router({
               name: true,
             },
           },
+          auth: {
+            name: true,
+          },
+          proposedAuthor: true,
+          proposedSource: true,
           filter: e.op(isDay, "and", hasHighlight),
           order_by: [{ expression: e.random() }],
           limit: 1,

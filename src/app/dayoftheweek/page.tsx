@@ -3,6 +3,7 @@
 import { trpc } from "@/app/_trpc/client";
 import { useDateResetsEvery } from "@/lib/dates/hooks";
 import { cn } from "@/lib/utils";
+import { PresentQuote } from "@/components/quotes/present";
 
 export default function DayOfTheWeekPage() {
   const today = useDateResetsEvery("hour");
@@ -29,44 +30,8 @@ export default function DayOfTheWeekPage() {
             <cite>&quot;The Moonstone&quot;</cite> by Wilkie Collins
           </footer>
         </blockquote>
-        {quote && (
-          <blockquote className="text-balance text-2xl lg:text-4xl">
-            <p>
-              {quote.highlight
-                ? injectSpan(
-                    quote.text,
-                    quote.highlight.start,
-                    quote.highlight.end,
-                  )
-                : quote.text}
-            </p>
-            {quote.src && (
-              <footer className="mt-4 text-lg">
-                <cite>{quote.src.title}</cite>
-                {quote.src.author && <> by {quote.src.author.name}</>}
-              </footer>
-            )}
-          </blockquote>
-        )}
+        {quote && <PresentQuote quote={quote} />}
       </div>
     </main>
-  );
-}
-
-function injectSpan(str: string, start: number, end: number) {
-  if (start < 0 || end > str.length || start >= end) {
-    throw new Error("Invalid start or end index.");
-  }
-
-  const before = str.slice(0, start);
-  const target = str.slice(start, end);
-  const after = str.slice(end);
-
-  return (
-    <>
-      {before}
-      <span className="font-bold">{target}</span>
-      {after}
-    </>
   );
 }

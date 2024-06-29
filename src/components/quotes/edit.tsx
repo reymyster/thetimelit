@@ -29,6 +29,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { GlassPanel } from "@/components/glass-panel";
 import { useToast } from "@/components/ui/use-toast";
 import { trpc } from "@/app/_trpc/client";
+import { type Quote } from "@/dbschema/interfaces";
 
 const formSchema = z.object({
   text: z
@@ -36,12 +37,16 @@ const formSchema = z.object({
     .min(5, { message: "Quote text must be at least 5 characters." }),
   proposedAuthor: z.string().optional(),
   proposedSource: z.string().optional(),
+  highlight: z
+    .object({ startOffset: z.number(), endOffset: z.number() })
+    .optional(),
 });
 
 export function EditQuote({ id }: { id: string }) {
   const [tab, setTab] = useState("txt");
   const { toast } = useToast();
   const { status, data: quote } = trpc.admin.quotes.getSingle.useQuery(id);
+  const editMutation = trpc.admin.quotes.save.useMutation();
 
   const defaultValues = {
     text: quote?.text ?? "",
@@ -56,9 +61,21 @@ export function EditQuote({ id }: { id: string }) {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log({ values });
+    await editMutation.mutateAsync({
+      id,
+      ...values,
+    });
+    toast({
+      title: "Saved successfully.",
+      description: "Quote has been successfully saved.",
+    });
   }
 
-  const { errors } = form.formState;
+  const {
+    setValue,
+    getValues,
+    formState: { errors },
+  } = form;
 
   useEffect(() => {
     if (errors?.text) {
@@ -73,29 +90,60 @@ export function EditQuote({ id }: { id: string }) {
 
   useEffect(() => {
     if (status === "success" && quote) {
-      form.setValue("text", quote.text);
-      form.setValue("proposedAuthor", quote.proposedAuthor ?? "");
-      form.setValue("proposedSource", quote.proposedSource ?? "");
+      const opts = {
+        shouldValidate: false,
+        shouldDirty: false,
+        shouldTouch: false,
+      };
+      setValue("text", quote.text, opts);
+      setValue("proposedAuthor", quote.proposedAuthor ?? "", opts);
+      setValue("proposedSource", quote.proposedSource ?? "", opts);
+      setValue("highlight", quote.highlight || undefined, opts);
     }
-  }, [status, form, quote]);
+  }, [status, setValue, quote]);
 
-  if (status === "pending") return <div>Loading...</div>;
+  if (status === "pending")
+    return <GlassPanel className="p-8 lg:p-12">Loading...</GlassPanel>;
 
-  console.log({ quote });
+  const fvHighlight = getValues("highlight");
+  const fvText = getValues("text");
+
+  const handleHighlight = () => {
+    if (fvHighlight) return; // wrong mode
+
+    const selection = window.getSelection();
+    const range = selection?.getRangeAt(0);
+
+    if (!range) return; // no range found
+
+    setValue(
+      "highlight",
+      { startOffset: range.startOffset, endOffset: range.endOffset },
+      { shouldTouch: true, shouldDirty: true },
+    );
+
+    selection?.removeAllRanges();
+  };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <GlassPanel className="p-8 lg:p-12">
-          <h1 className="-mt-2 mb-8 text-2xl">Edit Quote {id}</h1>
+          <h1 className="-mt-2 mb-8 text-2xl">
+            Edit Quote{" "}
+            <span className="flow-root max-w-lg truncate">
+              {fvText || quote?.text}
+            </span>
+          </h1>
           <Tabs
             value={tab}
             onValueChange={setTab}
             className="w-[80svw] lg:w-[800px] xl:w-[960px] 2xl:w-[1180px]"
           >
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="txt">Text</TabsTrigger>
               <TabsTrigger value="source">Source</TabsTrigger>
+              <TabsTrigger value="highlight">Highlight</TabsTrigger>
             </TabsList>
             <TabsContent value="txt">
               <Card>
@@ -159,6 +207,41 @@ export function EditQuote({ id }: { id: string }) {
                 </CardContent>
               </Card>
             </TabsContent>
+            <TabsContent value="highlight">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Highlight</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div
+                    className="mt-4 bg-background p-4 text-2xl text-foreground"
+                    onMouseUp={handleHighlight}
+                  >
+                    {fvHighlight ? (
+                      highlightedText({
+                        text: fvText,
+                        highlight: fvHighlight,
+                      })
+                    ) : (
+                      <>{fvText}</>
+                    )}
+                  </div>
+                </CardContent>
+                <CardFooter className="flex justify-end">
+                  <Button
+                    disabled={!fvHighlight}
+                    onClick={() =>
+                      setValue("highlight", undefined, {
+                        shouldDirty: true,
+                        shouldTouch: true,
+                      })
+                    }
+                  >
+                    Reset
+                  </Button>
+                </CardFooter>
+              </Card>
+            </TabsContent>
           </Tabs>
           <div className="mt-2 flex justify-end gap-2 lg:mt-4 lg:gap-4">
             <Button variant={"outline"} asChild>
@@ -173,5 +256,26 @@ export function EditQuote({ id }: { id: string }) {
         </GlassPanel>
       </form>
     </Form>
+  );
+}
+
+function highlightedText(quote?: Pick<Quote, "text" | "highlight"> | null) {
+  if (!quote || !quote.text) return null;
+
+  if (!quote.highlight) return <>{quote.text}</>;
+
+  const before = quote.text.slice(0, quote.highlight.startOffset);
+  const target = quote.text.slice(
+    quote.highlight.startOffset,
+    quote.highlight.endOffset,
+  );
+  const after = quote.text.slice(quote.highlight.endOffset);
+
+  return (
+    <>
+      {before}
+      <span className="bg-yellow-500/50 p-2">{target}</span>
+      {after}
+    </>
   );
 }

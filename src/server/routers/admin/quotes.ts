@@ -40,4 +40,28 @@ export const quoteRouter = router({
 
       return result;
     }),
+  save: proc
+    .input(
+      z.object({
+        id: z.string().uuid(),
+        text: z.string().min(0),
+        highlight: z
+          .object({ startOffset: z.number(), endOffset: z.number() })
+          .optional(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const query = e.update(e.Quote, () => {
+        return {
+          filter_single: { id: input.id },
+          set: {
+            text: input.text,
+            highlight: input.highlight,
+          },
+        };
+      });
+
+      const result = await query.run(client);
+      return result;
+    }),
 });
