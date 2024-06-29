@@ -56,8 +56,8 @@ module default {
             constraint max_value(6); #Saturday
         };
         time: tuple<period: range<int32>, fullday: bool>;
-        highlight: tuple<`start`: int16, `end`: int16> {
-            constraint expression on (.`start` < .`end` and .`start` >= 0);
+        highlight: tuple<startOffset: int16, endOffset: int16> {
+            constraint expression on (.startOffset < .endOffset and .startOffset >= 0);
         };
         submitted_by: User;
         verified_by: User;
