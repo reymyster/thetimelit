@@ -71,9 +71,5 @@ module default {
 
         proposedAuthor: str;
         proposedSource: str;
-
-        constraint expression on (
-            (not (exists .auth or exists .src)) or ((exists .auth or exists .src) and (not (exists .auth and exists .src)))
-        );
     }
 }
