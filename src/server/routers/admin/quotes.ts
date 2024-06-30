@@ -9,6 +9,28 @@ export const quoteRouter = router({
   ping: proc.query(({ ctx }) => {
     return `${new Date().toLocaleDateString()} - id: ${ctx.user_id}`;
   }),
+  getAll: proc.query(async () => {
+    // const query = e.select(e.Quote, (quote) => {
+    //   return {
+    //     ...e.Quote["*"],
+    //     auth: { ...e.Author["*"] },
+    //     src: { ...e.Src["*"] },
+    //     verified_by: { ...e.User["*"] },
+    //   };
+    // });
+    const query = e.select(e.Quote, (quote) => ({
+      ...e.Quote["*"],
+      order_by: {
+        expression: quote.created_at,
+        direction: e.DESC,
+      },
+      limit: e.int32(500),
+    }));
+
+    const result = await query.run(client);
+
+    return result;
+  }),
   getSingle: proc
     .input(z.string().uuid().optional())
     .query(async ({ input }) => {
