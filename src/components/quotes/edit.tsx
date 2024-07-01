@@ -28,7 +28,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { GlassPanel } from "@/components/glass-panel";
 import { useToast } from "@/components/ui/use-toast";
-import { trpc } from "@/app/_trpc/client";
+import { useGetSingleQuote, useEditQuoteMutation } from "@/lib/db/admin/hooks";
 import { type Quote } from "@/dbschema/interfaces";
 
 const formSchema = z.object({
@@ -45,8 +45,8 @@ const formSchema = z.object({
 export function EditQuote({ id }: { id: string }) {
   const [tab, setTab] = useState("txt");
   const { toast } = useToast();
-  const { status, data: quote } = trpc.admin.quotes.getSingle.useQuery(id);
-  const editMutation = trpc.admin.quotes.save.useMutation();
+  const { status, data: quote } = useGetSingleQuote(id);
+  const editMutation = useEditQuoteMutation();
 
   const defaultValues = {
     text: quote?.text ?? "",
@@ -245,7 +245,7 @@ export function EditQuote({ id }: { id: string }) {
           </Tabs>
           <div className="mt-2 flex justify-end gap-2 lg:mt-4 lg:gap-4">
             <Button variant={"outline"} asChild>
-              <Link href="/manage" prefetch={false}>
+              <Link href="/manage/quotes" prefetch={false}>
                 Close
               </Link>
             </Button>

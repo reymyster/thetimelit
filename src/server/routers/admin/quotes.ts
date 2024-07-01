@@ -86,4 +86,12 @@ export const quoteRouter = router({
       const result = await query.run(client);
       return result;
     }),
+  delete: proc.input(z.string().uuid()).mutation(async ({ input }) => {
+    const query = e.delete(e.Quote, () => ({
+      filter_single: { id: input },
+    }));
+
+    const result = await query.run(client);
+    return result;
+  }),
 });
