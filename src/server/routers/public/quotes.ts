@@ -128,36 +128,18 @@ export const quoteRouter = router({
         text: z.string().min(0),
         auth: z.string().uuid().optional(),
         src: z.string().uuid().optional(),
-        day: z.number().optional(),
-        time: z
-          .object({
-            period: z.object({ start: z.number(), end: z.number() }),
-            fullday: z.boolean(),
-          })
-          .optional(),
         proposedAuthor: z.string().optional(),
         proposedSource: z.string().optional(),
       }),
     )
     .mutation(async ({ input }) => {
       const query = e.update(e.Quote, () => {
-        const time = input.time
-          ? e.tuple({
-              period: e.range(
-                input.time.period.start,
-                input.time.period.end + 1,
-              ),
-              fullday: input.time.fullday,
-            })
-          : null;
         return {
           filter_single: { id: input.id },
           set: {
             text: input.text,
             auth: getAuthorByID(input.auth),
             src: getSourceByID(input.src),
-            day: input.day,
-            time,
             proposedAuthor: input.proposedAuthor,
             proposedSource: input.proposedSource,
           },

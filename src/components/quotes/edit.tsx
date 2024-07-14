@@ -57,6 +57,23 @@ const daysOfTheWeek = [
   { value: 6, label: "Saturday" },
 ];
 
+function getNumberFromTimeString(s: string): number | undefined {
+  if (!s || s.trim().length === 0) return undefined;
+
+  return parseInt(s.replace(":", ""), 10);
+}
+
+function getTimeStringFromNumber(n: number | undefined): string | undefined {
+  if (typeof n !== "number") return undefined;
+
+  const hour = Math.floor(n / 100)
+    .toString()
+    .padStart(2, "0");
+  const minute = (n % 100).toString().padStart(2, "0");
+
+  return `${hour}:${minute}`;
+}
+
 export function EditQuote({ id }: { id: string }) {
   const [tab, setTab] = useState("txt");
   const { toast } = useToast();
@@ -114,6 +131,17 @@ export function EditQuote({ id }: { id: string }) {
       setValue("proposedSource", quote.proposedSource ?? "", opts);
       setValue("highlight", quote.highlight || undefined, opts);
       setValue("day", quote.day == null ? undefined : quote.day, opts);
+      setValue(
+        "time",
+        quote.time == null
+          ? undefined
+          : {
+              lower: quote.time.period.lower ?? 0,
+              upper: quote.time.period.upper ?? 0,
+              specific: quote.time.specific,
+            },
+        opts,
+      );
     }
   }, [status, setValue, quote]);
 
