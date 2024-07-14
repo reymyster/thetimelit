@@ -2,6 +2,7 @@ import { router, authedProcedure as proc } from "@/server/trpc";
 import { z } from "zod";
 import { createClient } from "edgedb";
 import e from "@/dbschema/edgeql-js";
+import { SaveQuoteSchema } from "@/lib/db/admin/schemas";
 
 const client = createClient();
 
@@ -62,30 +63,33 @@ export const quoteRouter = router({
 
       return result;
     }),
-  save: proc
-    .input(
-      z.object({
-        id: z.string().uuid(),
-        text: z.string().min(0),
-        highlight: z
-          .object({ startOffset: z.number(), endOffset: z.number() })
-          .optional(),
-      }),
-    )
-    .mutation(async ({ input, ctx }) => {
-      const query = e.update(e.Quote, () => {
-        return {
-          filter_single: { id: input.id },
-          set: {
-            text: input.text,
-            highlight: input.highlight,
-          },
-        };
-      });
+  save: proc.input(SaveQuoteSchema).mutation(async ({ input, ctx }) => {
+    let timeInput = input.time
+      ? e.tuple({
+          period: e.range(
+            { inc_lower: true, inc_upper: true },
+            input.time.lower,
+            input.time.upper,
+          ),
+          specific: input.time.specific,
+        })
+      : undefined;
 
-      const result = await query.run(client);
-      return result;
-    }),
+    const query = e.update(e.Quote, () => {
+      return {
+        filter_single: { id: input.id },
+        set: {
+          text: input.text,
+          highlight: input.highlight,
+          day: input.day,
+          time: timeInput,
+        },
+      };
+    });
+
+    const result = await query.run(client);
+    return result;
+  }),
   delete: proc.input(z.string().uuid()).mutation(async ({ input }) => {
     const query = e.delete(e.Quote, () => ({
       filter_single: { id: input },

@@ -1,9 +1,21 @@
 "use client";
 
+import { useState } from "react";
 import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 import { Row } from "@tanstack/react-table";
 import { type Quote } from "@/dbschema/interfaces";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -22,7 +34,7 @@ interface DataTableRowActionProps {
 
 export function DataTableRowActions({
   row: {
-    original: { id },
+    original: { id, text },
   },
 }: DataTableRowActionProps) {
   const deleter = useDeleteQuoteMutation();

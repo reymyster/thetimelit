@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Check, ChevronsUpDown } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import Link from "next/link";
@@ -15,6 +16,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
   Form,
   FormControl,
   FormDescription,
@@ -24,47 +33,52 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { GlassPanel } from "@/components/glass-panel";
 import { useToast } from "@/components/ui/use-toast";
 import { useGetSingleQuote, useEditQuoteMutation } from "@/lib/db/admin/hooks";
 import { type Quote } from "@/dbschema/interfaces";
+import { SaveQuoteSchema } from "@/lib/db/admin/schemas";
+import { cn } from "@/lib/utils";
 
-const formSchema = z.object({
-  text: z
-    .string()
-    .min(5, { message: "Quote text must be at least 5 characters." }),
-  proposedAuthor: z.string().optional(),
-  proposedSource: z.string().optional(),
-  highlight: z
-    .object({ startOffset: z.number(), endOffset: z.number() })
-    .optional(),
-});
+const daysOfTheWeek = [
+  { value: 0, label: "Sunday" },
+  { value: 1, label: "Monday" },
+  { value: 2, label: "Tuesday" },
+  { value: 3, label: "Wednesday" },
+  { value: 4, label: "Thursday" },
+  { value: 5, label: "Friday" },
+  { value: 6, label: "Saturday" },
+];
 
 export function EditQuote({ id }: { id: string }) {
   const [tab, setTab] = useState("txt");
   const { toast } = useToast();
   const { status, data: quote } = useGetSingleQuote(id);
   const editMutation = useEditQuoteMutation();
+  const [dayPopoverOpen, setDayPopoverOpen] = useState(false);
 
   const defaultValues = {
+    id,
     text: quote?.text ?? "",
     proposedAuthor: quote?.proposedAuthor ?? "",
     proposedSource: quote?.proposedSource ?? "",
   };
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof SaveQuoteSchema>>({
+    resolver: zodResolver(SaveQuoteSchema),
     defaultValues,
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof SaveQuoteSchema>) {
     console.log({ values });
-    await editMutation.mutateAsync({
-      id,
-      ...values,
-    });
+    await editMutation.mutateAsync(values);
     toast({
       title: "Saved successfully.",
       description: "Quote has been successfully saved.",
@@ -99,6 +113,7 @@ export function EditQuote({ id }: { id: string }) {
       setValue("proposedAuthor", quote.proposedAuthor ?? "", opts);
       setValue("proposedSource", quote.proposedSource ?? "", opts);
       setValue("highlight", quote.highlight || undefined, opts);
+      setValue("day", quote.day == null ? undefined : quote.day, opts);
     }
   }, [status, setValue, quote]);
 
@@ -140,10 +155,11 @@ export function EditQuote({ id }: { id: string }) {
             onValueChange={setTab}
             className="w-[80svw] lg:w-[800px] xl:w-[960px] 2xl:w-[1180px]"
           >
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="txt">Text</TabsTrigger>
               <TabsTrigger value="source">Source</TabsTrigger>
               <TabsTrigger value="highlight">Highlight</TabsTrigger>
+              <TabsTrigger value="time">Time Period</TabsTrigger>
             </TabsList>
             <TabsContent value="txt">
               <Card>
@@ -240,6 +256,86 @@ export function EditQuote({ id }: { id: string }) {
                     Reset
                   </Button>
                 </CardFooter>
+              </Card>
+            </TabsContent>
+            <TabsContent value="time">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Time Period</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="day"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Day</FormLabel>
+                        <Popover
+                          open={dayPopoverOpen}
+                          onOpenChange={setDayPopoverOpen}
+                        >
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant="outline"
+                                role="combobox"
+                                className={cn(
+                                  "w-[200px] justify-between",
+                                  typeof field.value === "undefined"
+                                    ? "text-muted-foreground"
+                                    : null,
+                                )}
+                                type="button"
+                              >
+                                {daysOfTheWeek.find(
+                                  (d) => d.value === field.value,
+                                )?.label ?? "Select Day of the Week"}
+                                <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-[200px] p-0">
+                            <Command>
+                              <CommandInput placeholder="Search day..." />
+                              <CommandList>
+                                <CommandEmpty>No day found.</CommandEmpty>
+                                <CommandGroup>
+                                  {daysOfTheWeek.map((day) => (
+                                    <CommandItem
+                                      value={day.label}
+                                      key={day.value}
+                                      onSelect={() => {
+                                        form.setValue(
+                                          "day",
+                                          field.value === day.value
+                                            ? undefined
+                                            : day.value,
+                                        );
+                                        setDayPopoverOpen(false);
+                                      }}
+                                    >
+                                      <Check
+                                        className={cn(
+                                          "mr-2 size-4",
+                                          day.value === field.value
+                                            ? "opacity-100"
+                                            : "opacity-0",
+                                        )}
+                                      />
+                                      {day.label}
+                                    </CommandItem>
+                                  ))}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                        <FormDescription>Day of the Week</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
               </Card>
             </TabsContent>
           </Tabs>
