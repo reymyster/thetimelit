@@ -15,6 +15,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Command,
   CommandEmpty,
@@ -46,6 +47,10 @@ import { useGetSingleQuote, useEditQuoteMutation } from "@/lib/db/admin/hooks";
 import { type Quote } from "@/dbschema/interfaces";
 import { SaveQuoteSchema } from "@/lib/db/admin/schemas";
 import { cn } from "@/lib/utils";
+import {
+  getNumberFromTimeString,
+  getTimeStringFromNumber,
+} from "@/lib/times/functions";
 
 const daysOfTheWeek = [
   { value: 0, label: "Sunday" },
@@ -56,23 +61,6 @@ const daysOfTheWeek = [
   { value: 5, label: "Friday" },
   { value: 6, label: "Saturday" },
 ];
-
-function getNumberFromTimeString(s: string): number | undefined {
-  if (!s || s.trim().length === 0) return undefined;
-
-  return parseInt(s.replace(":", ""), 10);
-}
-
-function getTimeStringFromNumber(n: number | undefined): string | undefined {
-  if (typeof n !== "number") return undefined;
-
-  const hour = Math.floor(n / 100)
-    .toString()
-    .padStart(2, "0");
-  const minute = (n % 100).toString().padStart(2, "0");
-
-  return `${hour}:${minute}`;
-}
 
 export function EditQuote({ id }: { id: string }) {
   const [tab, setTab] = useState("txt");
@@ -86,6 +74,9 @@ export function EditQuote({ id }: { id: string }) {
     text: quote?.text ?? "",
     proposedAuthor: quote?.proposedAuthor ?? "",
     proposedSource: quote?.proposedSource ?? "",
+    timeLower: getTimeStringFromNumber(quote?.time?.period?.lower) ?? "",
+    timeUpper: getTimeStringFromNumber(quote?.time?.period?.upper) ?? "",
+    timeSpecific: quote?.time?.specific ?? false,
   };
 
   const form = useForm<z.infer<typeof SaveQuoteSchema>>({
@@ -131,17 +122,15 @@ export function EditQuote({ id }: { id: string }) {
       setValue("proposedSource", quote.proposedSource ?? "", opts);
       setValue("highlight", quote.highlight || undefined, opts);
       setValue("day", quote.day == null ? undefined : quote.day, opts);
-      setValue(
-        "time",
-        quote.time == null
-          ? undefined
-          : {
-              lower: quote.time.period.lower ?? 0,
-              upper: quote.time.period.upper ?? 0,
-              specific: quote.time.specific,
-            },
-        opts,
-      );
+      if (quote.time == null) {
+        setValue("timeLower", undefined);
+        setValue("timeUpper", undefined);
+        setValue("timeSpecific", false);
+      } else {
+        setValue("timeLower", getTimeStringFromNumber(quote.time.period.lower));
+        setValue("timeUpper", getTimeStringFromNumber(quote.time.period.upper));
+        setValue("timeSpecific", quote.time.specific);
+      }
     }
   }, [status, setValue, quote]);
 
@@ -289,15 +278,32 @@ export function EditQuote({ id }: { id: string }) {
             <TabsContent value="time">
               <Card>
                 <CardHeader>
-                  <CardTitle>Time Period</CardTitle>
+                  <CardTitle>
+                    Time Period
+                    {fvHighlight && fvText ? (
+                      <>
+                        {" "}
+                        for:{" "}
+                        <span className="ml-2 rounded-md bg-accent p-3 text-4xl text-primary">
+                          {fvText.slice(
+                            fvHighlight.startOffset,
+                            fvHighlight.endOffset,
+                          )}
+                        </span>
+                      </>
+                    ) : null}
+                  </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-8">
                   <FormField
                     control={form.control}
                     name="day"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Day</FormLabel>
+                        <FormLabel>
+                          Day
+                          <br />
+                        </FormLabel>
                         <Popover
                           open={dayPopoverOpen}
                           onOpenChange={setDayPopoverOpen}
@@ -363,6 +369,50 @@ export function EditQuote({ id }: { id: string }) {
                       </FormItem>
                     )}
                   />
+                  <div className="grid max-w-96 grid-cols-3 gap-8">
+                    <FormField
+                      control={form.control}
+                      name="timeLower"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Lower</FormLabel>
+                          <FormControl>
+                            <Input {...field} type="time" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="timeUpper"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Upper</FormLabel>
+                          <FormControl>
+                            <Input {...field} type="time" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="timeSpecific"
+                      render={({ field }) => (
+                        <FormItem className="mt-1.5 flex flex-col gap-4">
+                          <FormLabel>Specific</FormLabel>
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>

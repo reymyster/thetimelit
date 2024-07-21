@@ -4,6 +4,11 @@ import { createClient } from "edgedb";
 import e from "@/dbschema/edgeql-js";
 import { SaveQuoteSchema } from "@/lib/db/admin/schemas";
 
+import {
+  getNumberFromTimeString,
+  getTimeStringFromNumber,
+} from "@/lib/times/functions";
+
 const client = createClient();
 
 export const quoteRouter = router({
@@ -64,16 +69,18 @@ export const quoteRouter = router({
       return result;
     }),
   save: proc.input(SaveQuoteSchema).mutation(async ({ input, ctx }) => {
-    let timeInput = input.time
-      ? e.tuple({
-          period: e.range(
-            { inc_lower: true, inc_upper: true },
-            input.time.lower,
-            input.time.upper,
-          ),
-          specific: input.time.specific,
-        })
-      : undefined;
+    const lower = getNumberFromTimeString(input.timeLower);
+    const upper = getNumberFromTimeString(input.timeUpper);
+    let timeInput =
+      typeof lower !== "undefined" && typeof upper !== "undefined"
+        ? e.tuple({
+            period: e.range({ inc_lower: true, inc_upper: true }, lower, upper),
+            specific: input.timeSpecific,
+          })
+        : e.cast(
+            e.tuple({ period: e.range(e.int32), specific: e.bool }),
+            e.set(),
+          );
 
     const query = e.update(e.Quote, () => {
       return {

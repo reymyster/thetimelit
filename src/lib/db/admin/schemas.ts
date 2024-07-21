@@ -1,30 +1,59 @@
 import { z } from "zod";
 
-export const SaveQuoteSchema = z.object({
-  id: z.string().uuid(),
-  text: z
-    .string()
-    .min(5, { message: "Quote text must be at least 5 characters." }),
-  proposedAuthor: z.string().optional(),
-  proposedSource: z.string().optional(),
-  highlight: z
-    .object({ startOffset: z.number(), endOffset: z.number() })
-    .refine((data) => data.startOffset < data.endOffset, {
-      message: "Start must be before end.",
-    })
-    .optional(),
-  day: z.number().min(0).max(6).optional(),
-  time: z
-    .object({
-      lower: z.number().min(0).max(2359),
-      upper: z.number().min(0).max(2359),
-      specific: z.boolean(),
-    })
-    .refine(
-      (data) => data.specific || (data.lower < 1200 && data.upper < 1200),
-      {
-        message: "Non-specific times must all be AM",
-      },
-    )
-    .optional(),
-});
+import {
+  getNumberFromTimeString,
+  getTimeStringFromNumber,
+} from "@/lib/times/functions";
+
+export const SaveQuoteSchema = z
+  .object({
+    id: z.string().uuid(),
+    text: z
+      .string()
+      .min(5, { message: "Quote text must be at least 5 characters." }),
+    proposedAuthor: z.string().optional(),
+    proposedSource: z.string().optional(),
+    highlight: z
+      .object({ startOffset: z.number(), endOffset: z.number() })
+      .refine((data) => data.startOffset < data.endOffset, {
+        message: "Start must be before end.",
+      })
+      .optional(),
+    day: z.number().min(0).max(6).optional(),
+    timeUpper: z.string().optional(),
+    timeLower: z.string().optional(),
+    timeSpecific: z.boolean(),
+  })
+  .refine(
+    (data) => {
+      const u =
+        typeof data.timeUpper === "undefined" || data.timeUpper.length === 0;
+      const l =
+        typeof data.timeLower === "undefined" || data.timeLower.length === 0;
+
+      return (u && l) || (!u && !l);
+    },
+    {
+      message: "Both Times must be filled or blank",
+      path: ["timeLower"],
+    },
+  )
+  .refine(
+    (data) => {
+      const upper = getNumberFromTimeString(data.timeUpper);
+      const lower = getNumberFromTimeString(data.timeLower);
+      const noUpper = typeof upper === "undefined";
+      const noLower = typeof lower === "undefined";
+
+      return (
+        data.timeSpecific ||
+        noLower ||
+        noUpper ||
+        (lower < 1200 && upper < 1200)
+      );
+    },
+    {
+      message: "Non-Specific Times must all be AM.",
+      path: ["timeUpper"],
+    },
+  );
