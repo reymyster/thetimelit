@@ -11,6 +11,23 @@ import {
 
 const client = createClient();
 
+type ID = string | undefined;
+
+function getAuthorByID(id: ID) {
+  if (!id) return null;
+  return e.select(e.Author, () => ({ filter_single: { id } }));
+}
+
+function getSourceByID(id: ID) {
+  if (!id) return null;
+  return e.select(e.Src, () => ({ filter_single: { id } }));
+}
+
+function getUserByID(id: ID) {
+  if (!id) return null;
+  return e.select(e.User, () => ({ filter_single: { id } }));
+}
+
 export const quoteRouter = router({
   ping: proc.query(({ ctx }) => {
     return `${new Date().toLocaleDateString()} - id: ${ctx.user_id}`;
@@ -46,9 +63,11 @@ export const quoteRouter = router({
         return {
           id: true,
           auth: {
+            id: true,
             name: true,
           },
           src: {
+            id: true,
             title: true,
             author: {
               name: true,
@@ -87,8 +106,12 @@ export const quoteRouter = router({
         filter_single: { id: input.id },
         set: {
           text: input.text,
+          auth: getAuthorByID(input.author),
+          src: getSourceByID(input.src),
+          proposedAuthor: input.proposedAuthor ?? e.cast(e.str, e.set()),
+          proposedSource: input.proposedSource ?? e.cast(e.str, e.set()),
           highlight: input.highlight,
-          day: input.day,
+          day: input.day === -1 ? null : input.day,
           time: timeInput,
         },
       };

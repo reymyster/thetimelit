@@ -13,13 +13,15 @@ export const SaveQuoteSchema = z
       .min(5, { message: "Quote text must be at least 5 characters." }),
     proposedAuthor: z.string().optional(),
     proposedSource: z.string().optional(),
+    author: z.string().uuid().optional(),
+    src: z.string().uuid().optional(),
     highlight: z
       .object({ startOffset: z.number(), endOffset: z.number() })
       .refine((data) => data.startOffset < data.endOffset, {
         message: "Start must be before end.",
       })
       .optional(),
-    day: z.number().min(0).max(6).optional(),
+    day: z.number().min(-1).max(6),
     timeUpper: z.string().optional(),
     timeLower: z.string().optional(),
     timeSpecific: z.boolean(),

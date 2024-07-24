@@ -72,8 +72,11 @@ export function EditQuote({ id }: { id: string }) {
   const defaultValues = {
     id,
     text: quote?.text ?? "",
+    author: quote?.auth?.id ?? "",
+    src: quote?.src?.id ?? "",
     proposedAuthor: quote?.proposedAuthor ?? "",
     proposedSource: quote?.proposedSource ?? "",
+    day: quote?.day ?? -1,
     timeLower: getTimeStringFromNumber(quote?.time?.period?.lower) ?? "",
     timeUpper: getTimeStringFromNumber(quote?.time?.period?.upper) ?? "",
     timeSpecific: quote?.time?.specific ?? false,
@@ -120,11 +123,13 @@ export function EditQuote({ id }: { id: string }) {
       setValue("text", quote.text, opts);
       setValue("proposedAuthor", quote.proposedAuthor ?? "", opts);
       setValue("proposedSource", quote.proposedSource ?? "", opts);
+      setValue("author", quote.auth?.id ?? "", opts);
+      setValue("src", quote.src?.id ?? "", opts);
       setValue("highlight", quote.highlight || undefined, opts);
-      setValue("day", quote.day == null ? undefined : quote.day, opts);
+      setValue("day", quote.day ?? -1, opts);
       if (quote.time == null) {
-        setValue("timeLower", undefined);
-        setValue("timeUpper", undefined);
+        setValue("timeLower", "");
+        setValue("timeUpper", "");
         setValue("timeSpecific", false);
       } else {
         setValue("timeLower", getTimeStringFromNumber(quote.time.period.lower));
@@ -216,7 +221,7 @@ export function EditQuote({ id }: { id: string }) {
                     name="proposedAuthor"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Author</FormLabel>
+                        <FormLabel>Proposed Author</FormLabel>
                         <FormControl>
                           <Input {...field} placeholder="Author Name" />
                         </FormControl>
@@ -229,7 +234,7 @@ export function EditQuote({ id }: { id: string }) {
                     name="proposedSource"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Source</FormLabel>
+                        <FormLabel>Proposed Source</FormLabel>
                         <FormControl>
                           <Input {...field} placeholder="Book Name" />
                         </FormControl>
@@ -342,7 +347,7 @@ export function EditQuote({ id }: { id: string }) {
                                         form.setValue(
                                           "day",
                                           field.value === day.value
-                                            ? undefined
+                                            ? -1
                                             : day.value,
                                         );
                                         setDayPopoverOpen(false);
@@ -414,6 +419,19 @@ export function EditQuote({ id }: { id: string }) {
                     />
                   </div>
                 </CardContent>
+                <CardFooter className="flex justify-end">
+                  <Button
+                    onClick={() => {
+                      var opts = { shouldDirty: true, shouldTouch: true };
+                      setValue("day", -1);
+                      setValue("timeLower", "");
+                      setValue("timeUpper", "");
+                      setValue("timeSpecific", false);
+                    }}
+                  >
+                    Clear
+                  </Button>
+                </CardFooter>
               </Card>
             </TabsContent>
           </Tabs>
