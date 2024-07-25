@@ -11,6 +11,9 @@ module default {
             rewrite insert, update using (datetime_of_statement())
         };
         works := .<author[is Src];
+        required deleted: bool {
+            default := false;
+        };
     }
 
     type Src {
@@ -25,6 +28,9 @@ module default {
             rewrite insert, update using (datetime_of_statement())
         };
         constraint exclusive on ((.title, .author));
+        required deleted: bool {
+            default := false;
+        };
     }
 
     type User {
@@ -71,5 +77,8 @@ module default {
 
         proposedAuthor: str;
         proposedSource: str;
+        required deleted: bool {
+            default := false;
+        };
     }
 }

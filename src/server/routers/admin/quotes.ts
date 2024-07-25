@@ -43,6 +43,7 @@ export const quoteRouter = router({
     // });
     const query = e.select(e.Quote, (quote) => ({
       ...e.Quote["*"],
+      filter: e.op(quote.deleted, "=", false),
       order_by: {
         expression: quote.created_at,
         direction: e.DESC,
@@ -121,8 +122,11 @@ export const quoteRouter = router({
     return result;
   }),
   delete: proc.input(z.string().uuid()).mutation(async ({ input }) => {
-    const query = e.delete(e.Quote, () => ({
+    const query = e.update(e.Quote, () => ({
       filter_single: { id: input },
+      set: {
+        deleted: true,
+      },
     }));
 
     const result = await query.run(client);
