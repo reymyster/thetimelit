@@ -25,6 +25,15 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   Form,
   FormControl,
   FormDescription,
@@ -34,6 +43,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Popover,
   PopoverContent,
@@ -43,7 +53,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { GlassPanel } from "@/components/glass-panel";
 import { useToast } from "@/components/ui/use-toast";
-import { useGetSingleQuote, useEditQuoteMutation } from "@/lib/db/admin/hooks";
+import {
+  useGetSingleQuote,
+  useEditQuoteMutation,
+  useGetActiveAuthors,
+  useCreateAuthorMutation,
+} from "@/lib/db/admin/hooks";
 import { type Quote } from "@/dbschema/interfaces";
 import { SaveQuoteSchema } from "@/lib/db/admin/schemas";
 import { cn } from "@/lib/utils";
@@ -68,6 +83,8 @@ export function EditQuote({ id }: { id: string }) {
   const { status, data: quote } = useGetSingleQuote(id);
   const editMutation = useEditQuoteMutation();
   const [dayPopoverOpen, setDayPopoverOpen] = useState(false);
+  const [authorPopopverOpen, setAuthorPopoverOpen] = useState(false);
+  const { status: getAuthorsStatus, data: authors } = useGetActiveAuthors();
 
   const defaultValues = {
     id,
@@ -242,7 +259,82 @@ export function EditQuote({ id }: { id: string }) {
                       </FormItem>
                     )}
                   />
+                  <FormField
+                    control={form.control}
+                    name="author"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Author
+                          <br />
+                        </FormLabel>
+                        <Popover
+                          open={authorPopopverOpen}
+                          onOpenChange={setAuthorPopoverOpen}
+                        >
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant="outline"
+                                role="combobox"
+                                className={cn(
+                                  "w-[200px] justify-between xl:w-[400px]",
+                                  typeof field.value === "undefined"
+                                    ? "text-muted-foreground"
+                                    : null,
+                                )}
+                                type="button"
+                              >
+                                {authors?.find((a) => a.id === field.value)
+                                  ?.name ?? "Select Author"}
+                                <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-[200px] p-0 xl:w-[400px]">
+                            <Command>
+                              <CommandInput placeholder="Search authors..." />
+                              <CommandList>
+                                <CommandEmpty>No author found.</CommandEmpty>
+                                <CommandGroup>
+                                  {authors?.map((author) => (
+                                    <CommandItem
+                                      value={author.name}
+                                      key={author.id}
+                                      onSelect={() => {
+                                        form.setValue(
+                                          "author",
+                                          field.value === author.id
+                                            ? ""
+                                            : author.id,
+                                        );
+                                        setAuthorPopoverOpen(false);
+                                      }}
+                                    >
+                                      <Check
+                                        className={cn(
+                                          "mr-2 size-4",
+                                          author.id === field.value
+                                            ? "opacity-100"
+                                            : "opacity-0",
+                                        )}
+                                      />
+                                      {author.name}
+                                    </CommandItem>
+                                  ))}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </CardContent>
+                <CardFooter className="flex justify-end">
+                  <AddAuthorButton />
+                </CardFooter>
               </Card>
             </TabsContent>
             <TabsContent value="highlight">
@@ -469,5 +561,54 @@ function highlightedText(quote?: Pick<Quote, "text" | "highlight"> | null) {
       <span className="bg-yellow-500/50 p-2">{target}</span>
       {after}
     </>
+  );
+}
+
+function AddAuthorButton() {
+  const [open, setOpen] = useState(false);
+  const [authorName, setAuthorName] = useState("");
+  const createMutation = useCreateAuthorMutation();
+
+  async function onSave() {
+    const name = (authorName ?? "").trim();
+    if (!authorName) {
+      alert("Cannot save empty author name.");
+      return;
+    }
+    await createMutation.mutateAsync({ name });
+    setOpen(false);
+    setAuthorName("");
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" type="button">
+          + Author
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Add New Author</DialogTitle>
+          <DialogDescription>Add a new Author</DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="author-name" className="text-right">
+              Name
+            </Label>
+            <Input
+              id="author-name"
+              className="col-span-3"
+              value={authorName}
+              onChange={(e) => setAuthorName(e.currentTarget.value)}
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button onClick={onSave}>Save</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

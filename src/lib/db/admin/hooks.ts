@@ -33,3 +33,19 @@ export function useDeleteQuoteMutation() {
 
   return mutation;
 }
+
+export function useGetActiveAuthors() {
+  return trpc.admin.authors.getActive.useQuery();
+}
+
+export function useCreateAuthorMutation() {
+  const utils = trpc.useUtils();
+
+  const mutation = trpc.admin.authors.add.useMutation({
+    onSuccess() {
+      utils.admin.authors.getActive.invalidate();
+    },
+  });
+
+  return mutation;
+}
