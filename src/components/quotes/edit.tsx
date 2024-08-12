@@ -49,6 +49,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { GlassPanel } from "@/components/glass-panel";
@@ -58,6 +67,8 @@ import {
   useEditQuoteMutation,
   useGetActiveAuthors,
   useCreateAuthorMutation,
+  useGetActiveSources,
+  useCreateSourceMutation,
 } from "@/lib/db/admin/hooks";
 import { type Quote } from "@/dbschema/interfaces";
 import { SaveQuoteSchema } from "@/lib/db/admin/schemas";
@@ -84,7 +95,9 @@ export function EditQuote({ id }: { id: string }) {
   const editMutation = useEditQuoteMutation();
   const [dayPopoverOpen, setDayPopoverOpen] = useState(false);
   const [authorPopopverOpen, setAuthorPopoverOpen] = useState(false);
+  const [srcPopoverOpen, setSrcPopoverOpen] = useState(false);
   const { status: getAuthorsStatus, data: authors } = useGetActiveAuthors();
+  const { status: getSourcesStats, data: sources } = useGetActiveSources();
 
   const defaultValues = {
     id,
@@ -331,8 +344,80 @@ export function EditQuote({ id }: { id: string }) {
                       </FormItem>
                     )}
                   />
+                  <FormField
+                    control={form.control}
+                    name="src"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Source <br />
+                        </FormLabel>
+                        <Popover
+                          open={srcPopoverOpen}
+                          onOpenChange={setSrcPopoverOpen}
+                        >
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant="outline"
+                                role="combobox"
+                                className={cn(
+                                  "w-[200px] justify-between xl:w-[400px]",
+                                  typeof field.value === "undefined"
+                                    ? "text-muted-foreground"
+                                    : null,
+                                )}
+                                type="button"
+                              >
+                                {sources?.find((a) => a.id === field.value)
+                                  ?.title ?? "Select Source"}
+                                <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-[200px] p-0 xl:w-[400px]">
+                            <Command>
+                              <CommandInput placeholder="Search sources..." />
+                              <CommandList>
+                                <CommandEmpty>No source found.</CommandEmpty>
+                                <CommandGroup>
+                                  {sources?.map((source) => (
+                                    <CommandItem
+                                      key={source.id}
+                                      value={`${source.title} - ${source.author.name}`}
+                                      onSelect={() => {
+                                        form.setValue(
+                                          "src",
+                                          field.value === source.id
+                                            ? ""
+                                            : source.id,
+                                        );
+                                        setSrcPopoverOpen(false);
+                                      }}
+                                    >
+                                      <Check
+                                        className={cn(
+                                          "mr-2 size-4",
+                                          source.id === field.value
+                                            ? "opacity-100"
+                                            : "opacity-0",
+                                        )}
+                                      />
+                                      {source.title} - {source.author.name}
+                                    </CommandItem>
+                                  ))}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </CardContent>
-                <CardFooter className="flex justify-end">
+                <CardFooter className="flex justify-end gap-2 lg:gap-4">
+                  <AddSourceButton />
                   <AddAuthorButton />
                 </CardFooter>
               </Card>
@@ -587,7 +672,7 @@ function AddAuthorButton() {
           + Author
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="max-w-[350px] lg:max-w-[640px]">
         <DialogHeader>
           <DialogTitle>Add New Author</DialogTitle>
           <DialogDescription>Add a new Author</DialogDescription>
@@ -602,6 +687,84 @@ function AddAuthorButton() {
               className="col-span-3"
               value={authorName}
               onChange={(e) => setAuthorName(e.currentTarget.value)}
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button onClick={onSave}>Save</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function AddSourceButton() {
+  const [open, setOpen] = useState(false);
+  const [author, setAuthor] = useState("");
+  const [title, setTitle] = useState("");
+
+  const { status, data: authors } = useGetActiveAuthors();
+  const createMutation = useCreateSourceMutation();
+
+  if (status === "pending") {
+    return null;
+  }
+
+  async function onSave() {
+    const authorID = author ?? "";
+    if (!authorID) {
+      alert("Please choose an author.");
+      return;
+    }
+    const sourceTitle = (title ?? "").trim();
+    if (!sourceTitle) {
+      alert("Cannot save an empty source name.");
+      return;
+    }
+    console.log({ authorID, sourceTitle });
+    await createMutation.mutateAsync({ title: sourceTitle, author: authorID });
+    setOpen(false);
+    setTitle("");
+    setAuthor("");
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" type="button">
+          + Source
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-[350px] lg:max-w-[640px]">
+        <DialogHeader>
+          <DialogTitle>Add New Source</DialogTitle>
+          <DialogDescription>Add new source for an Author</DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label className="text-right">Author</Label>
+            <Select defaultValue={author} onValueChange={setAuthor}>
+              <SelectTrigger className="col-span-3">
+                <SelectValue placeholder="Select an author" />
+              </SelectTrigger>
+              <SelectContent>
+                {authors?.map((author) => (
+                  <SelectItem key={author.id} value={author.id}>
+                    {author.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="source-title" className="text-right">
+              Source
+            </Label>
+            <Input
+              id="source-title"
+              className="col-span-3"
+              value={title}
+              onChange={(e) => setTitle(e.currentTarget.value)}
             />
           </div>
         </div>

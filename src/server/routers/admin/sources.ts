@@ -29,6 +29,10 @@ export const sourceRouter = router({
   getActive: proc.query(async () => {
     const query = e.select(e.Src, (src) => ({
       ...e.Src["*"],
+      author: {
+        name: true,
+        id: true,
+      },
       filter: e.op(src.deleted, "=", false),
       order_by: [
         { expression: src.title, direction: e.ASC },
