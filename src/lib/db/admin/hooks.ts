@@ -49,3 +49,19 @@ export function useCreateAuthorMutation() {
 
   return mutation;
 }
+
+export function useGetActiveSources() {
+  return trpc.admin.sources.getActive.useQuery();
+}
+
+export function useCreateSourceMutation() {
+  const utils = trpc.useUtils();
+
+  const mutation = trpc.admin.sources.add.useMutation({
+    onSuccess() {
+      utils.admin.sources.getActive.invalidate();
+    },
+  });
+
+  return mutation;
+}
