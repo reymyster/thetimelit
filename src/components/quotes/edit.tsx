@@ -174,6 +174,7 @@ export function EditQuote({ id }: { id: string }) {
 
   const fvHighlight = getValues("highlight");
   const fvText = getValues("text");
+  const fvAuthor = getValues("author");
 
   const handleHighlight = () => {
     if (fvHighlight) return; // wrong mode
@@ -321,6 +322,16 @@ export function EditQuote({ id }: { id: string }) {
                                             ? ""
                                             : author.id,
                                         );
+                                        const authorsWorks =
+                                          sources?.filter(
+                                            (s) => s.author.id === author.id,
+                                          ) ?? [];
+                                        form.setValue(
+                                          "src",
+                                          authorsWorks.length === 1
+                                            ? authorsWorks[0].id
+                                            : "",
+                                        );
                                         setAuthorPopoverOpen(false);
                                       }}
                                     >
@@ -347,73 +358,84 @@ export function EditQuote({ id }: { id: string }) {
                   <FormField
                     control={form.control}
                     name="src"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Source <br />
-                        </FormLabel>
-                        <Popover
-                          open={srcPopoverOpen}
-                          onOpenChange={setSrcPopoverOpen}
-                        >
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant="outline"
-                                role="combobox"
-                                className={cn(
-                                  "w-[200px] justify-between xl:w-[400px]",
-                                  typeof field.value === "undefined"
-                                    ? "text-muted-foreground"
-                                    : null,
-                                )}
-                                type="button"
-                              >
-                                {sources?.find((a) => a.id === field.value)
-                                  ?.title ?? "Select Source"}
-                                <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-[200px] p-0 xl:w-[400px]">
-                            <Command>
-                              <CommandInput placeholder="Search sources..." />
-                              <CommandList>
-                                <CommandEmpty>No source found.</CommandEmpty>
-                                <CommandGroup>
-                                  {sources?.map((source) => (
-                                    <CommandItem
-                                      key={source.id}
-                                      value={`${source.title} - ${source.author.name}`}
-                                      onSelect={() => {
-                                        form.setValue(
-                                          "src",
-                                          field.value === source.id
-                                            ? ""
-                                            : source.id,
-                                        );
-                                        setSrcPopoverOpen(false);
-                                      }}
-                                    >
-                                      <Check
-                                        className={cn(
-                                          "mr-2 size-4",
-                                          source.id === field.value
-                                            ? "opacity-100"
-                                            : "opacity-0",
-                                        )}
-                                      />
-                                      {source.title} - {source.author.name}
-                                    </CommandItem>
-                                  ))}
-                                </CommandGroup>
-                              </CommandList>
-                            </Command>
-                          </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    render={({ field }) => {
+                      const chosen = sources?.find((a) => a.id === field.value);
+                      const buttonText = chosen
+                        ? `${chosen.title} - ${chosen.author.name}`
+                        : "Select Source";
+                      return (
+                        <FormItem>
+                          <FormLabel>
+                            Source <br />
+                          </FormLabel>
+                          <Popover
+                            open={srcPopoverOpen}
+                            onOpenChange={setSrcPopoverOpen}
+                          >
+                            <PopoverTrigger asChild>
+                              <FormControl>
+                                <Button
+                                  variant="outline"
+                                  role="combobox"
+                                  className={cn(
+                                    "w-[200px] justify-between xl:w-[400px]",
+                                    typeof field.value === "undefined"
+                                      ? "text-muted-foreground"
+                                      : null,
+                                  )}
+                                  type="button"
+                                >
+                                  {buttonText}
+                                  <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
+                                </Button>
+                              </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[200px] p-0 xl:w-[400px]">
+                              <Command>
+                                <CommandInput placeholder="Search sources..." />
+                                <CommandList>
+                                  <CommandEmpty>No source found.</CommandEmpty>
+                                  <CommandGroup>
+                                    {sources
+                                      ?.filter(
+                                        (source) =>
+                                          !fvAuthor ||
+                                          source.author.id === fvAuthor,
+                                      )
+                                      .map((source) => (
+                                        <CommandItem
+                                          key={source.id}
+                                          value={`${source.title} - ${source.author.name}`}
+                                          onSelect={() => {
+                                            form.setValue(
+                                              "src",
+                                              field.value === source.id
+                                                ? ""
+                                                : source.id,
+                                            );
+                                            setSrcPopoverOpen(false);
+                                          }}
+                                        >
+                                          <Check
+                                            className={cn(
+                                              "mr-2 size-4",
+                                              source.id === field.value
+                                                ? "opacity-100"
+                                                : "opacity-0",
+                                            )}
+                                          />
+                                          {source.title} - {source.author.name}
+                                        </CommandItem>
+                                      ))}
+                                  </CommandGroup>
+                                </CommandList>
+                              </Command>
+                            </PopoverContent>
+                          </Popover>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
                   />
                 </CardContent>
                 <CardFooter className="flex justify-end gap-2 lg:gap-4">
