@@ -1,10 +1,10 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { type Quote } from "@/dbschema/interfaces";
 import { DataTableRowActions } from "./data-table-row-actions";
+import { type GetAllQuotesReturnType } from "@/server/routers/admin/quotes";
 
-export const columns: ColumnDef<Quote>[] = [
+export const columns: ColumnDef<GetAllQuotesReturnType[number]>[] = [
   {
     accessorKey: "text",
     header: "Text",

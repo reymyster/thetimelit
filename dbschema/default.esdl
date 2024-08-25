@@ -53,6 +53,14 @@ module default {
         };
     }
 
+    type TimePeriod {
+        required quote: Quote {
+            on target delete delete source;
+        }
+        required period: range<int32>;
+        required specific: bool;
+    }
+
     type Quote {
         required text: str;
         auth: Author;
@@ -62,6 +70,7 @@ module default {
             constraint max_value(6); #Saturday
         };
         time: tuple<period: range<int32>, specific: bool>;
+        times := .<quote[is TimePeriod];
         highlight: tuple<startOffset: int16, endOffset: int16> {
             constraint expression on (.startOffset < .endOffset and .startOffset >= 0);
         };

@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createClient } from "edgedb";
 import e from "@/dbschema/edgeql-js";
 import { SaveQuoteSchema } from "@/lib/db/admin/schemas";
+import { inferProcedureOutput } from "@trpc/server";
 
 import {
   getNumberFromTimeString,
@@ -43,6 +44,9 @@ export const quoteRouter = router({
     // });
     const query = e.select(e.Quote, (quote) => ({
       ...e.Quote["*"],
+      times: {
+        ...e.TimePeriod["*"],
+      },
       filter: e.op(quote.deleted, "=", false),
       order_by: {
         expression: quote.created_at,
@@ -133,3 +137,8 @@ export const quoteRouter = router({
     return result;
   }),
 });
+
+export type QuoteRouter = typeof quoteRouter;
+export type GetAllQuotesReturnType = inferProcedureOutput<
+  QuoteRouter["getAll"]
+>;

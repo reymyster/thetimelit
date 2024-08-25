@@ -4,7 +4,7 @@ import { useState } from "react";
 import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 import { Row } from "@tanstack/react-table";
-import { type Quote } from "@/dbschema/interfaces";
+import { type GetAllQuotesReturnType } from "@/server/routers/admin/quotes";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,7 +29,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useDeleteQuoteMutation } from "@/lib/db/admin/hooks";
 
 interface DataTableRowActionProps {
-  row: Row<Quote>;
+  row: Row<GetAllQuotesReturnType[number]>;
 }
 
 export function DataTableRowActions({
