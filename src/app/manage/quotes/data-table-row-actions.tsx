@@ -4,7 +4,7 @@ import { useState } from "react";
 import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 import { Row } from "@tanstack/react-table";
-import { type GetAllQuotesReturnType } from "@/server/routers/admin/quotes";
+import type { GetAllQuotesReturnType } from "@/server/routers/admin/quotes";
 import {
   AlertDialog,
   AlertDialogAction,

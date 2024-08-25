@@ -142,3 +142,6 @@ export type QuoteRouter = typeof quoteRouter;
 export type GetAllQuotesReturnType = inferProcedureOutput<
   QuoteRouter["getAll"]
 >;
+export type GetSingleQuoteReturnType = inferProcedureOutput<
+  QuoteRouter["getSingle"]
+>;

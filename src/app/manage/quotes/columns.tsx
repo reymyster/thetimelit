@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableRowActions } from "./data-table-row-actions";
-import { type GetAllQuotesReturnType } from "@/server/routers/admin/quotes";
+import type { GetAllQuotesReturnType } from "@/server/routers/admin/quotes";
 
 export const columns: ColumnDef<GetAllQuotesReturnType[number]>[] = [
   {

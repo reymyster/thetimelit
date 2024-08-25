@@ -70,7 +70,7 @@ import {
   useGetActiveSources,
   useCreateSourceMutation,
 } from "@/lib/db/admin/hooks";
-import { type Quote } from "@/dbschema/interfaces";
+import type { Quote } from "@/dbschema/interfaces";
 import { SaveQuoteSchema } from "@/lib/db/admin/schemas";
 import { cn } from "@/lib/utils";
 import {
