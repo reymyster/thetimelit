@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { ClipboardEvent, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -88,7 +89,7 @@ const daysOfTheWeek = [
   { value: 6, label: "Saturday" },
 ];
 
-export function EditQuote({ id }: { id: string }) {
+export function EditQuote({ id }: { id?: string }) {
   const [tab, setTab] = useState("txt");
   const { toast } = useToast();
   const { status, data: quote } = useGetSingleQuote(id);
@@ -98,6 +99,7 @@ export function EditQuote({ id }: { id: string }) {
   const [srcPopoverOpen, setSrcPopoverOpen] = useState(false);
   const { status: getAuthorsStatus, data: authors } = useGetActiveAuthors();
   const { status: getSourcesStats, data: sources } = useGetActiveSources();
+  const router = useRouter();
 
   const defaultValues = {
     id,
@@ -124,6 +126,7 @@ export function EditQuote({ id }: { id: string }) {
       title: "Saved successfully.",
       description: "Quote has been successfully saved.",
     });
+    if (!id) router.push("/manage/quotes");
   }
 
   const {
@@ -157,15 +160,42 @@ export function EditQuote({ id }: { id: string }) {
       setValue("src", quote.src?.id ?? "", opts);
       setValue("highlight", quote.highlight || undefined, opts);
       setValue("day", quote.day ?? -1, opts);
-      if (quote.time == null) {
+      if ((quote.times ?? []).length === 0) {
         setValue("timeLower", "");
         setValue("timeUpper", "");
         setValue("timeSpecific", false);
-      } else {
-        setValue("timeLower", getTimeStringFromNumber(quote.time.period.lower));
-        setValue("timeUpper", getTimeStringFromNumber(quote.time.period.upper));
-        setValue("timeSpecific", quote.time.specific);
+      } else if (quote.times.length === 1) {
+        setValue(
+          "timeLower",
+          getTimeStringFromNumber(quote.times[0].period.lower),
+        );
+        setValue(
+          "timeUpper",
+          getTimeStringFromNumber(quote.times[0].period.upper),
+        );
+        setValue("timeSpecific", quote.times[0].specific);
+      } else if (quote.times.length === 2) {
+        const lower = Math.max(
+          quote.times[0].period.lower ?? 0,
+          quote.times[1].period.lower ?? 0,
+        );
+        const upper = Math.min(
+          quote.times[0].period.upper ?? 2400,
+          quote.times[1].period.upper ?? 2400,
+        );
+        setValue("timeLower", getTimeStringFromNumber(lower));
+        setValue("timeUpper", getTimeStringFromNumber(upper));
+        setValue("timeSpecific", false);
       }
+      // if (quote.time == null) {
+      //   setValue("timeLower", "");
+      //   setValue("timeUpper", "");
+      //   setValue("timeSpecific", false);
+      // } else {
+      //   setValue("timeLower", getTimeStringFromNumber(quote.time.period.lower));
+      //   setValue("timeUpper", getTimeStringFromNumber(quote.time.period.upper));
+      //   setValue("timeSpecific", quote.time.specific);
+      // }
     }
   }, [status, setValue, quote]);
 
@@ -193,15 +223,32 @@ export function EditQuote({ id }: { id: string }) {
     selection?.removeAllRanges();
   };
 
+  const handlePaste = (event: ClipboardEvent<HTMLTextAreaElement>) => {
+    event.preventDefault();
+
+    const pastedText = event.clipboardData.getData("text");
+    const textWithoutLineBreaks = pastedText
+      .replace(/\n/g, " ")
+      .replace(/\s\s+/g, " ");
+    setValue("text", textWithoutLineBreaks);
+    event.currentTarget.value = textWithoutLineBreaks;
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <GlassPanel className="p-8 lg:p-12">
           <h1 className="-mt-2 mb-8 text-2xl">
-            Edit Quote{" "}
-            <span className="flow-root max-w-lg truncate">
-              {fvText || quote?.text}
-            </span>
+            {id ? (
+              <>
+                Edit Quote{" "}
+                <span className="flow-root max-w-lg truncate">
+                  {fvText || quote?.text}
+                </span>
+              </>
+            ) : (
+              <>Add New Quote</>
+            )}
           </h1>
           <Tabs
             value={tab}
@@ -230,7 +277,11 @@ export function EditQuote({ id }: { id: string }) {
                       <FormItem>
                         <FormLabel>Quote</FormLabel>
                         <FormControl>
-                          <Textarea {...field} className="min-h-[4lh]" />
+                          <Textarea
+                            {...field}
+                            className="min-h-[4lh]"
+                            onPaste={handlePaste}
+                          />
                         </FormControl>
                         <FormDescription>Text of the quotation</FormDescription>
                         <FormMessage />

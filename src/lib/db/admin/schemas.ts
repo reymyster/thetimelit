@@ -7,7 +7,7 @@ import {
 
 export const SaveQuoteSchema = z
   .object({
-    id: z.string().uuid(),
+    id: z.string().uuid().optional(),
     text: z
       .string()
       .min(5, { message: "Quote text must be at least 5 characters." }),
