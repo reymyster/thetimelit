@@ -104,8 +104,8 @@ export function EditQuote({ id }: { id?: string }) {
   const defaultValues = {
     id,
     text: quote?.text ?? "",
-    author: quote?.auth?.id ?? "",
-    src: quote?.src?.id ?? "",
+    author: quote?.auth?.id,
+    src: quote?.src?.id,
     proposedAuthor: quote?.proposedAuthor ?? "",
     proposedSource: quote?.proposedSource ?? "",
     day: quote?.day ?? -1,
@@ -143,6 +143,13 @@ export function EditQuote({ id }: { id?: string }) {
         title: "Please fix errors.",
         description: "Please fix issues with missing Quote Text",
       });
+    } else if (errors?.author) {
+      setTab("source");
+      toast({
+        variant: "destructive",
+        title: "Please fix errors.",
+        description: "Please fix issue with author.",
+      });
     }
   }, [errors, setTab, toast]);
 
@@ -156,8 +163,8 @@ export function EditQuote({ id }: { id?: string }) {
       setValue("text", quote.text, opts);
       setValue("proposedAuthor", quote.proposedAuthor ?? "", opts);
       setValue("proposedSource", quote.proposedSource ?? "", opts);
-      setValue("author", quote.auth?.id ?? "", opts);
-      setValue("src", quote.src?.id ?? "", opts);
+      setValue("author", quote.auth?.id, opts);
+      setValue("src", quote.src?.id, opts);
       setValue("highlight", quote.highlight || undefined, opts);
       setValue("day", quote.day ?? -1, opts);
       if ((quote.times ?? []).length === 0) {
@@ -343,7 +350,7 @@ export function EditQuote({ id }: { id?: string }) {
                                 variant="outline"
                                 role="combobox"
                                 className={cn(
-                                  "w-[200px] justify-between xl:w-[400px]",
+                                  "w-[300px] justify-between xl:w-[600px]",
                                   typeof field.value === "undefined"
                                     ? "text-muted-foreground"
                                     : null,
@@ -356,7 +363,7 @@ export function EditQuote({ id }: { id?: string }) {
                               </Button>
                             </FormControl>
                           </PopoverTrigger>
-                          <PopoverContent className="w-[200px] p-0 xl:w-[400px]">
+                          <PopoverContent className="w-[300px] p-0 xl:w-[600px]">
                             <Command>
                               <CommandInput placeholder="Search authors..." />
                               <CommandList>
@@ -370,7 +377,7 @@ export function EditQuote({ id }: { id?: string }) {
                                         form.setValue(
                                           "author",
                                           field.value === author.id
-                                            ? ""
+                                            ? undefined
                                             : author.id,
                                         );
                                         const authorsWorks =
@@ -381,7 +388,7 @@ export function EditQuote({ id }: { id?: string }) {
                                           "src",
                                           authorsWorks.length === 1
                                             ? authorsWorks[0].id
-                                            : "",
+                                            : undefined,
                                         );
                                         setAuthorPopoverOpen(false);
                                       }}
@@ -429,7 +436,7 @@ export function EditQuote({ id }: { id?: string }) {
                                   variant="outline"
                                   role="combobox"
                                   className={cn(
-                                    "w-[200px] justify-between xl:w-[400px]",
+                                    "w-[300px] justify-between xl:w-[600px]",
                                     typeof field.value === "undefined"
                                       ? "text-muted-foreground"
                                       : null,
@@ -441,7 +448,7 @@ export function EditQuote({ id }: { id?: string }) {
                                 </Button>
                               </FormControl>
                             </PopoverTrigger>
-                            <PopoverContent className="w-[200px] p-0 xl:w-[400px]">
+                            <PopoverContent className="w-[300px] p-0 xl:w-[600px]">
                               <Command>
                                 <CommandInput placeholder="Search sources..." />
                                 <CommandList>
@@ -461,7 +468,7 @@ export function EditQuote({ id }: { id?: string }) {
                                             form.setValue(
                                               "src",
                                               field.value === source.id
-                                                ? ""
+                                                ? undefined
                                                 : source.id,
                                             );
                                             setSrcPopoverOpen(false);
