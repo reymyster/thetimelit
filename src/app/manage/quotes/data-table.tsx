@@ -34,7 +34,7 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="flex flex-col space-y-4">
+    <div className="my-4 flex flex-col space-y-4">
       <DataTableToolbar table={table} />
       <div className="rounded-md border bg-background/50 backdrop-blur-sm">
         <Table>

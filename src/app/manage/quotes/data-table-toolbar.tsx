@@ -5,6 +5,8 @@ import { Table } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
+import { DataTableViewOptions } from "./data-table-view-options";
+
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
 }
@@ -27,6 +29,7 @@ export function DataTableToolbar<TData>({
             New
           </Link>
         </Button>
+        <DataTableViewOptions table={table} />
       </div>
     </div>
   );

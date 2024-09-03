@@ -78,16 +78,7 @@ import {
   getNumberFromTimeString,
   getTimeStringFromNumber,
 } from "@/lib/times/functions";
-
-const daysOfTheWeek = [
-  { value: 0, label: "Sunday" },
-  { value: 1, label: "Monday" },
-  { value: 2, label: "Tuesday" },
-  { value: 3, label: "Wednesday" },
-  { value: 4, label: "Thursday" },
-  { value: 5, label: "Friday" },
-  { value: 6, label: "Saturday" },
-];
+import { DaysOfTheWeek } from "@/lib/dates/days-of-the-week";
 
 export function EditQuote({ id }: { id?: string }) {
   const [tab, setTab] = useState("txt");
@@ -583,7 +574,7 @@ export function EditQuote({ id }: { id?: string }) {
                                 )}
                                 type="button"
                               >
-                                {daysOfTheWeek.find(
+                                {DaysOfTheWeek.find(
                                   (d) => d.value === field.value,
                                 )?.label ?? "Select Day of the Week"}
                                 <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
@@ -596,7 +587,7 @@ export function EditQuote({ id }: { id?: string }) {
                               <CommandList>
                                 <CommandEmpty>No day found.</CommandEmpty>
                                 <CommandGroup>
-                                  {daysOfTheWeek.map((day) => (
+                                  {DaysOfTheWeek.map((day) => (
                                     <CommandItem
                                       value={day.label}
                                       key={day.value}

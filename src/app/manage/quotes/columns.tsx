@@ -3,17 +3,52 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableRowActions } from "./data-table-row-actions";
 import type { GetAllQuotesReturnType } from "@/server/routers/admin/quotes";
+import type { Quote } from "@/dbschema/interfaces";
+import { DaysOfTheWeek } from "@/lib/dates/days-of-the-week";
+
+function highlightText({ text, highlight }: Pick<Quote, "text" | "highlight">) {
+  if (!text || !highlight) return <>{text}</>;
+
+  const before = text.slice(0, highlight.startOffset);
+  const target = text.slice(highlight.startOffset, highlight.endOffset);
+  const after = text.slice(highlight.endOffset);
+
+  return (
+    <>
+      {before}
+      <span className="-mx-0.5 bg-primary/50 px-1 text-background">
+        {target}
+      </span>
+      {after}
+    </>
+  );
+}
 
 export const columns: ColumnDef<GetAllQuotesReturnType[number]>[] = [
   {
     accessorKey: "text",
-    header: "Text",
+    header: "Quote",
+    enableHiding: false,
     cell: ({
       row: {
-        original: { text },
+        original: { text, highlight },
       },
     }) => {
-      return <div className="max-w-lg truncate">{text}</div>;
+      const quote = highlightText({ text, highlight });
+
+      return <div className="line-clamp-2 max-w-lg">{quote}</div>;
+    },
+  },
+  {
+    accessorKey: "day",
+    header: "Day",
+    cell: ({
+      row: {
+        original: { day },
+      },
+    }) => {
+      const dayName = day !== null ? DaysOfTheWeek[day].short : "-";
+      return <div>{dayName}</div>;
     },
   },
   {
