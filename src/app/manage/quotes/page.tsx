@@ -13,7 +13,7 @@ export default function ManageQuotes() {
   if (typeof quotes === "undefined") return <div>Error loading quotes</div>;
 
   return (
-    <main className="flex flex-grow flex-col items-center justify-center">
+    <main className="flex flex-grow flex-col items-center justify-start">
       <DataTable columns={columns} data={quotes} />
     </main>
   );
