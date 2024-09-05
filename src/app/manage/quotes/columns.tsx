@@ -16,9 +16,7 @@ function highlightText({ text, highlight }: Pick<Quote, "text" | "highlight">) {
   return (
     <>
       {before}
-      <span className="-mx-0.5 bg-primary/50 px-1 text-background">
-        {target}
-      </span>
+      <span className="text-red-800 dark:text-red-300">{target}</span>
       {after}
     </>
   );
@@ -36,7 +34,7 @@ export const columns: ColumnDef<GetAllQuotesReturnType[number]>[] = [
     }) => {
       const quote = highlightText({ text, highlight });
 
-      return <div className="line-clamp-2 max-w-lg">{quote}</div>;
+      return <div className="line-clamp-2 w-64 lg:w-[512px]">{quote}</div>;
     },
   },
   {

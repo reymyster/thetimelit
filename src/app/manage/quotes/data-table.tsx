@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/table";
 
 import { DataTableToolbar } from "./data-table-toolbar";
+import { DataTablePagination } from "./data-table-pagination";
 import { useStore } from "./data";
 
 interface DataTableProps<TData, TValue> {
@@ -51,7 +52,7 @@ export function DataTable<TData, TValue>({
     <div className="my-4 flex flex-col space-y-4">
       <DataTableToolbar table={table} />
       <div className="rounded-md border bg-background/50 backdrop-blur-sm">
-        <Table className="min-w-[50svw]">
+        <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -100,6 +101,7 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
+      <DataTablePagination table={table} />
     </div>
   );
 }
