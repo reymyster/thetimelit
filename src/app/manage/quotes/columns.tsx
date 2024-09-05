@@ -34,7 +34,11 @@ export const columns: ColumnDef<GetAllQuotesReturnType[number]>[] = [
     }) => {
       const quote = highlightText({ text, highlight });
 
-      return <div className="line-clamp-2 w-64 lg:w-[512px]">{quote}</div>;
+      return (
+        <div className="line-clamp-2 w-64 lg:w-[512px] 2xl:w-[720px] min-[2400px]:w-[960px]">
+          {quote}
+        </div>
+      );
     },
   },
   {
