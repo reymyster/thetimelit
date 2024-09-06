@@ -72,7 +72,7 @@ export const columns: ColumnDef<QuoteDisplay>[] = [
       return (
         <div
           className={cn(
-            "line-clamp-1 w-24 lg:w-36 2xl:w-48",
+            "line-clamp-1 w-20 lg:w-32 2xl:w-40",
             effectiveAuthorIsProposed && "text-primary/60",
           )}
         >
@@ -93,7 +93,7 @@ export const columns: ColumnDef<QuoteDisplay>[] = [
       return (
         <div
           className={cn(
-            "line-clamp-w w-24 lg:w-36 2xl:w-48",
+            "line-clamp-w 4xl:w-56 w-24 lg:w-36 2xl:w-48",
             effectiveSourceIsProposed && "text-primary/60",
           )}
         >
