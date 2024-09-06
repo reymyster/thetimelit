@@ -1,5 +1,6 @@
 import { create } from "zustand";
 
+import { DaysOfTheWeek } from "@/lib/dates/days-of-the-week";
 import { GetAllQuotesReturnType } from "@/server/routers/admin/quotes";
 
 type QuoteCalculatedColumns = {
@@ -51,6 +52,20 @@ export function transformQuotesForManageTableDisplay({
     } as QuoteDisplay;
   });
 }
+
+export type ColumnFilterValue = {
+  label: string;
+  shortLabel: string;
+  value: string | number;
+};
+
+export const daysForFiltering: ColumnFilterValue[] = DaysOfTheWeek.map(
+  (day) => ({
+    label: day.label,
+    shortLabel: day.short,
+    value: day.value,
+  }),
+);
 
 type State = {
   globalFilter: string;

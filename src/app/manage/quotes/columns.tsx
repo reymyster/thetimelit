@@ -59,6 +59,9 @@ export const columns: ColumnDef<QuoteDisplay>[] = [
       const dayName = day !== null ? DaysOfTheWeek[day].short : "-";
       return <div>{dayName}</div>;
     },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id));
+    },
   },
   {
     accessorKey: "effectiveAuthor",

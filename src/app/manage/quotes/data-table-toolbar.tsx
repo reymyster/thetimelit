@@ -7,9 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 
+import { DataTableFacetedFilter } from "./data-table-faceted-filter";
 import { DataTableViewOptions } from "./data-table-view-options";
 
-import { useStore } from "./data";
+import { useStore, daysForFiltering } from "./data";
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -21,14 +22,15 @@ export function DataTableToolbar<TData>({
   const globalFilter = useStore((state) => state.globalFilter);
   const setGlobalFilter = useStore((state) => state.setGlobalFilter);
 
-  const areFiltersChanged = Boolean(globalFilter);
+  const areFiltersChanged =
+    Boolean(globalFilter) || (table.getState().columnFilters?.length ?? 0) > 0;
   const resetFilters = useCallback(() => {
     if (globalFilter) setGlobalFilter("");
     table.resetColumnFilters();
   }, [globalFilter, setGlobalFilter, table]);
 
   return (
-    <div className="z-50 flex items-center justify-between">
+    <div className="4xl:gap-32 z-50 flex items-center justify-between gap-4 lg:gap-16">
       <div className="flex flex-1 items-center space-x-2">
         <Input
           placeholder="Search quote text..."
@@ -36,6 +38,13 @@ export function DataTableToolbar<TData>({
           value={globalFilter ?? ""}
           onChange={(event) => setGlobalFilter(event.target.value)}
         />
+        {table.getColumn("day") && (
+          <DataTableFacetedFilter
+            column={table.getColumn("day")}
+            title="Day"
+            options={daysForFiltering}
+          />
+        )}
         {areFiltersChanged && (
           <Button
             variant="ghost"
