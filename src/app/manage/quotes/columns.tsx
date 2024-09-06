@@ -5,8 +5,13 @@ import { DataTableRowActions } from "./data-table-row-actions";
 import type { GetAllQuotesReturnType } from "@/server/routers/admin/quotes";
 import type { Quote } from "@/dbschema/interfaces";
 import { DaysOfTheWeek } from "@/lib/dates/days-of-the-week";
+import type { QuoteDisplay } from "./data";
+import { cn } from "@/lib/utils";
 
-function highlightText({ text, highlight }: Pick<Quote, "text" | "highlight">) {
+function highlightText({
+  text,
+  highlight,
+}: Pick<QuoteDisplay, "text" | "highlight">) {
   if (!text || !highlight) return <>{text}</>;
 
   const before = text.slice(0, highlight.startOffset);
@@ -22,7 +27,7 @@ function highlightText({ text, highlight }: Pick<Quote, "text" | "highlight">) {
   );
 }
 
-export const columns: ColumnDef<GetAllQuotesReturnType[number]>[] = [
+export const columns: ColumnDef<QuoteDisplay>[] = [
   {
     accessorKey: "text",
     header: "Quote",
@@ -35,7 +40,7 @@ export const columns: ColumnDef<GetAllQuotesReturnType[number]>[] = [
       const quote = highlightText({ text, highlight });
 
       return (
-        <div className="line-clamp-2 w-64 lg:w-[512px] 2xl:w-[720px] min-[2400px]:w-[960px]">
+        <div className="4xl:w-[960px] line-clamp-2 w-64 lg:w-[512px] 2xl:w-[720px]">
           {quote}
         </div>
       );
@@ -51,6 +56,46 @@ export const columns: ColumnDef<GetAllQuotesReturnType[number]>[] = [
     }) => {
       const dayName = day !== null ? DaysOfTheWeek[day].short : "-";
       return <div>{dayName}</div>;
+    },
+  },
+  {
+    accessorKey: "effectiveAuthor",
+    header: "Author",
+    cell: ({
+      row: {
+        original: { effectiveAuthor, effectiveAuthorIsProposed },
+      },
+    }) => {
+      return (
+        <div
+          className={cn(
+            "line-clamp-1 w-24 lg:w-36 2xl:w-48",
+            effectiveAuthorIsProposed && "text-primary/60",
+          )}
+        >
+          {effectiveAuthor}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "effectiveSource",
+    header: "Source",
+    cell: ({
+      row: {
+        original: { effectiveSource, effectiveSourceIsProposed },
+      },
+    }) => {
+      return (
+        <div
+          className={cn(
+            "line-clamp-w w-24 lg:w-36 2xl:w-48",
+            effectiveSourceIsProposed && "text-primary/60",
+          )}
+        >
+          {effectiveSource}
+        </div>
+      );
     },
   },
   {

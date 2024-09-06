@@ -48,6 +48,8 @@ export const quoteRouter = router({
     // });
     const query = e.select(e.Quote, (quote) => ({
       ...e.Quote["*"],
+      auth: { name: true },
+      src: { title: true, author: { name: true } },
       times: {
         ...e.TimePeriod["*"],
       },

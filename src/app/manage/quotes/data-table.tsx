@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import {
   ColumnDef,
   flexRender,
@@ -22,7 +23,7 @@ import {
 
 import { DataTableToolbar } from "./data-table-toolbar";
 import { DataTablePagination } from "./data-table-pagination";
-import { useStore } from "./data";
+import { useStore, transformQuotesForManageTableDisplay } from "./data";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
