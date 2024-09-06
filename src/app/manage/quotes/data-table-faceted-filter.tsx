@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Column } from "@tanstack/react-table";
 import { CirclePlusIcon, CheckIcon } from "lucide-react";
 
@@ -38,9 +39,10 @@ export function DataTableFacetedFilter<TData, TValue>({
   const selectedValues = new Set(
     column?.getFilterValue() as ColumnFilterValue["value"][],
   );
+  const [open, setOpen] = useState(false);
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button variant="outline" size="sm" className="h-8 border-dashed">
           <CirclePlusIcon className="mr-2 size-4" />
@@ -99,6 +101,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                           selectedValues.delete(option.value);
                         } else {
                           selectedValues.add(option.value);
+                          setOpen(false);
                         }
                         const filterValues = Array.from(selectedValues);
                         column?.setFilterValue(
