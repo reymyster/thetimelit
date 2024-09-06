@@ -32,6 +32,7 @@ export const columns: ColumnDef<QuoteDisplay>[] = [
     accessorKey: "text",
     header: "Quote",
     enableHiding: false,
+    enableGlobalFilter: true,
     cell: ({
       row: {
         original: { text, highlight },
@@ -49,6 +50,7 @@ export const columns: ColumnDef<QuoteDisplay>[] = [
   {
     accessorKey: "day",
     header: "Day",
+    enableGlobalFilter: false,
     cell: ({
       row: {
         original: { day },
@@ -61,6 +63,7 @@ export const columns: ColumnDef<QuoteDisplay>[] = [
   {
     accessorKey: "effectiveAuthor",
     header: "Author",
+    enableGlobalFilter: false,
     cell: ({
       row: {
         original: { effectiveAuthor, effectiveAuthorIsProposed },
@@ -81,6 +84,7 @@ export const columns: ColumnDef<QuoteDisplay>[] = [
   {
     accessorKey: "effectiveSource",
     header: "Source",
+    enableGlobalFilter: false,
     cell: ({
       row: {
         original: { effectiveSource, effectiveSourceIsProposed },

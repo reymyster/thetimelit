@@ -31,7 +31,7 @@ export function DataTableToolbar<TData>({
     <div className="z-50 flex items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">
         <Input
-          placeholder="Search quotes..."
+          placeholder="Search quote text..."
           className="h-8 w-[150px] lg:w-[250px]"
           value={globalFilter ?? ""}
           onChange={(event) => setGlobalFilter(event.target.value)}
