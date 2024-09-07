@@ -79,6 +79,7 @@ import {
   getTimeStringFromNumber,
 } from "@/lib/times/functions";
 import { DaysOfTheWeek } from "@/lib/dates/days-of-the-week";
+import { HighlightedQuote } from "@/components/highlighted-quote";
 
 export function EditQuote({ id }: { id?: string }) {
   const [tab, setTab] = useState("txt");
@@ -504,10 +505,7 @@ export function EditQuote({ id }: { id?: string }) {
                     onMouseUp={handleHighlight}
                   >
                     {fvHighlight ? (
-                      highlightedText({
-                        text: fvText,
-                        highlight: fvHighlight,
-                      })
+                      <HighlightedQuote text={fvText} highlight={fvHighlight} />
                     ) : (
                       <>{fvText}</>
                     )}
@@ -696,27 +694,6 @@ export function EditQuote({ id }: { id?: string }) {
         </GlassPanel>
       </form>
     </Form>
-  );
-}
-
-function highlightedText(quote?: Pick<Quote, "text" | "highlight"> | null) {
-  if (!quote || !quote.text) return null;
-
-  if (!quote.highlight) return <>{quote.text}</>;
-
-  const before = quote.text.slice(0, quote.highlight.startOffset);
-  const target = quote.text.slice(
-    quote.highlight.startOffset,
-    quote.highlight.endOffset,
-  );
-  const after = quote.text.slice(quote.highlight.endOffset);
-
-  return (
-    <>
-      {before}
-      <span className="bg-yellow-500/50 p-2">{target}</span>
-      {after}
-    </>
   );
 }
 

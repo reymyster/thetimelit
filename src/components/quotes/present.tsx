@@ -1,4 +1,5 @@
 import { type Quote, type Src, type Author } from "@/dbschema/interfaces";
+import { HighlightedQuote } from "../highlighted-quote";
 
 interface QuotePresentation {
   text: Quote["text"];
@@ -20,30 +21,13 @@ export function PresentQuote({ quote }: { quote: QuotePresentation }) {
   return (
     <blockquote className="text-balance text-2xl lg:text-4xl">
       <p>
-        <HighlightedText quote={quote} />
+        <HighlightedQuote
+          text={quote.text}
+          highlight={quote.highlight}
+          className="font-bold"
+        />
       </p>
     </blockquote>
-  );
-}
-
-function HighlightedText({ quote }: { quote: QuotePresentation }) {
-  if (!quote.highlight) return <>{quote.text}</>;
-
-  const {
-    text,
-    highlight: { startOffset, endOffset },
-  } = quote;
-
-  const before = text.slice(0, startOffset);
-  const target = text.slice(startOffset, endOffset);
-  const after = text.slice(endOffset);
-
-  return (
-    <>
-      {before}
-      <span className="font-bold">{target}</span>
-      {after}
-    </>
   );
 }
 

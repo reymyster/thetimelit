@@ -7,25 +7,7 @@ import type { Quote } from "@/dbschema/interfaces";
 import { DaysOfTheWeek } from "@/lib/dates/days-of-the-week";
 import type { QuoteDisplay } from "./data";
 import { cn } from "@/lib/utils";
-
-function highlightText({
-  text,
-  highlight,
-}: Pick<QuoteDisplay, "text" | "highlight">) {
-  if (!text || !highlight) return <>{text}</>;
-
-  const before = text.slice(0, highlight.startOffset);
-  const target = text.slice(highlight.startOffset, highlight.endOffset);
-  const after = text.slice(highlight.endOffset);
-
-  return (
-    <>
-      {before}
-      <span className="text-red-800 dark:text-red-300">{target}</span>
-      {after}
-    </>
-  );
-}
+import { HighlightedQuote } from "@/components/highlighted-quote";
 
 export const columns: ColumnDef<QuoteDisplay>[] = [
   {
@@ -38,11 +20,13 @@ export const columns: ColumnDef<QuoteDisplay>[] = [
         original: { text, highlight },
       },
     }) => {
-      const quote = highlightText({ text, highlight });
-
       return (
         <div className="4xl:w-[960px] line-clamp-2 w-64 lg:w-[512px] 2xl:w-[720px]">
-          {quote}
+          <HighlightedQuote
+            text={text}
+            highlight={highlight}
+            className="text-red-800 dark:text-red-300"
+          />
         </div>
       );
     },

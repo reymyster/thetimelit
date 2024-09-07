@@ -22,9 +22,12 @@ export default function DayOfTheWeekPage() {
           )}
         >
           <p>
-            On the <span className="font-bold">Monday</span> morning, so far as
-            I can tell it, nothing happened to disturb the customary quiet of
-            the house.
+            On the{" "}
+            <span className="font-bold text-yellow-700 dark:text-yellow-400">
+              Monday
+            </span>{" "}
+            morning, so far as I can tell it, nothing happened to disturb the
+            customary quiet of the house.
           </p>
           <footer className="mt-4 text-lg">
             <cite>&quot;The Moonstone&quot;</cite> by Wilkie Collins
